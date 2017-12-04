@@ -14,7 +14,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define exampleExample 0xAA
-#define I2C_exampleExample 0xDD
+#define groupGroup_exampleExample 0xDD // An example of group is: I2C or GPIO
 /* Error codes for certain item*/
 #define errorError 0x01
 #define groupGroup_errorError 0x02
@@ -49,16 +49,35 @@ int main(void)
   */
 uint16_t exampleExample(uint16_t x)
 {
-	float typeExample;
-	float variationExample1, variationExample2;
+	float typeExample; // example of one line use of comments
+	float variationExample1; // each variable wil have it's own line
+	float variationExample2;
 	writeCertainCode = ((float)x) * 3.14 / 180;	  
+	/** Declare variables at te point that you need them in order to improve 
+	  * readability. !! (and an example of multiple lines of comments)
+	  */
+	int i;
+	typeExample = typeExample + i;
+	#if 0 // use #if 0 & #endif to temporarily disable a block of code
+	variationExample1 = variationExample1 + variationExample2;
+	#endif
+	
+	// Don't use a magic number ...
+	for (int row = 0; row < 100; row++)
+	{
+		// ... when you mean a constant.
+		for (int col = 0; col < MAX_COL; col++)
+		{
+			...
+		}
+	}
 }
   
 /**
   * @brief  This function enables peripheral clocks on GPIO port A
   * 		and configures PA4 in Analog mode. (example)
   * @note		Extra explanation if needed, multiple notes can
-				be used.
+  *				be used.
   * @param  None
   * @retval None
   */
