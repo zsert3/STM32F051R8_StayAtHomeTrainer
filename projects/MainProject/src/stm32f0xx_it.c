@@ -110,36 +110,5 @@ void SysTick_Handler(void)
 /*  file (startup_stm32f0xx.s).                                               */
 /******************************************************************************/
 
-/**
-  * @brief  This function handles I2C1 interrupt request.
-  * @param  None
-  * @retval None
-  */
-void I2C1_IRQHandler(void)
-{
-	uint32_t I2C_InterruptStatus = I2C1->ISR; /* Get interrupt status */
-  
-  if((I2C_InterruptStatus & I2C_ISR_ADDR) == I2C_ISR_ADDR)
-  {
-    I2C1->ICR |= I2C_ICR_ADDRCF; /* Address match event */
-  }
-  else if((I2C_InterruptStatus & I2C_ISR_RXNE) == I2C_ISR_RXNE)
-  {
-    /* Read receive register, will clear RXNE flag */
-    if(I2C1->RXDR == 0xAA)
-    {
-      GPIOC->BSRR = GPIO_BSRR_BS_9; /* toggle green LED */
-    }
-  }
-  else
-  {
-    GPIOC->BSRR = GPIO_BSRR_BS_8; /* Lit orange LED */
-    NVIC_DisableIRQ(I2C1_IRQn); /* Disable I2C1_IRQn */
-  }
-}
-
-/**
-  * @}
-  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

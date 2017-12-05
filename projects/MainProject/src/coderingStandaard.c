@@ -1,23 +1,25 @@
 /**
-  ******************************************************************************
-  * @file    coderingStandaard.c 
-  * @author  Example Example
-  * @version V0.0.1
-  * @date    ?? - ?? - ????
-  * @brief   leg uit in het kort wat dit bestand doet
-  ******************************************************************************
-  */
+******************************************************************************
+* @file    	coderingStandaard.h 
+* @author 	Example Example
+* @version	V0.0.1
+* @date   	?? - ?? - ????
+* @brief  	Dit is een bestand met daarin voorbeelden van hoe de code 
+*			er uit moet zien. (leg uit in het kort wat dit bestand doet)
+******************************************************************************
+*/
 
 /* Includes ------------------------------------------------------------------*/  <-- maximale lengte is dit
+#include "coderingStandaard.h"
 #include "groupGroup_exampleExample.h"
 /* Global variables ----------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define exampleExample 0xAA
-#define groupGroup_exampleExample 0xDD // An example of group is: I2C or GPIO
+#define EXAMPLE_EXAMPLE 0xAA
+#define GROUP_GROUP__EXAMPLE_EXAMPLE 0xDD // An example of group is: I2C or GPIO
 /* Error codes for certain item*/
-#define errorError 0x01
-#define groupGroup_errorError 0x02
+#define ERROR_ERROR 0x01
+#define GROUP_GROUP__ERROR_ERROR 0x02
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
