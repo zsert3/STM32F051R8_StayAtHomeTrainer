@@ -7,10 +7,11 @@
 
   <Targets>
     <Target>
-      <TargetName>Main</TargetName>
+      <TargetName>main</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
+      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F051R8</Device>
@@ -463,6 +464,11 @@
               <FileName>stm32f0xx_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\stm32f0xx_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\main.c</FilePath>
             </File>
           </Files>
         </Group>
