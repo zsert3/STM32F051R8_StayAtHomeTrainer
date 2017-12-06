@@ -391,11 +391,6 @@
               <FilePath>.\src\API.c</FilePath>
             </File>
             <File>
-              <FileName>sendRecieveUART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\sendRecieveUART.c</FilePath>
-            </File>
-            <File>
               <FileName>EEPROM.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\EEPROM.c</FilePath>
@@ -470,6 +465,16 @@
               <FileType>1</FileType>
               <FilePath>.\src\main.c</FilePath>
             </File>
+            <File>
+              <FileName>wifiComm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\wifiComm.c</FilePath>
+            </File>
+            <File>
+              <FileName>sendReceiveUART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\sendReceiveUART.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -519,6 +524,11 @@
               <FileName>stm32f0xx_i2c.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\libraries\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f0xx_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\libraries\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_usart.c</FilePath>
             </File>
           </Files>
         </Group>

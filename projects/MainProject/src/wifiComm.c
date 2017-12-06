@@ -1,17 +1,14 @@
 /**
 ******************************************************************************
-* @file    	main.c
-* @author 	Rick Winters
+* @file    	coderingStandaard.h 
+* @author 	Example Example
 * @version	V0.0.1
-* @date   	06-12-2017
-* @brief  	This is the main file of the project
+* @date   	?? - ?? - ????
+* @brief  	Dit is een bestand met daarin voorbeelden van hoe de code 
+*			er uit moet zien. (leg uit in het kort wat dit bestand doet)
 ******************************************************************************
 */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f0xx_it.h"
-#include "sendReceiveUART.h"
+#include "wifiComm.h"
 
-int main(){
-	USART_init();
-}
