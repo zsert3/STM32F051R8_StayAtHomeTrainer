@@ -34,7 +34,8 @@
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
-
+extern volatile char *buffer;
+extern volatile int head, tail;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -101,6 +102,31 @@ void SysTick_Handler(void)
   if(ticks   ==  30){GPIOC->BSRR = 0x0200;} // Green LED on
   if(ticks   ==  45){GPIOC->BRR  = 0x0200;} // Green LED off
   if(ticks   == 300){ticks=0;}
+}
+
+void USART2_IRQHandler(void)
+{ 
+	char bufferVal;
+	
+	//Read Data Register not empty interrupt?
+	if(USART2->ISR & USART_ISR_RXNE)
+	{
+		 // Read the data, clears the interrupt flag
+		 bufferVal = USART2->RDR;
+		 
+		 //check if the position is free and prevent overwriting head position (head position always has a value != 0)
+			if(buffer[tail] == 0)
+			{
+			 //add input character to buffer
+			 buffer[tail] = bufferVal;	
+			 
+			 //increase tail posiiton
+			 if(tail == 99)
+				 tail = 0;
+			 else
+				 tail++;
+		 }
+	}
 }
 
 /******************************************************************************/
