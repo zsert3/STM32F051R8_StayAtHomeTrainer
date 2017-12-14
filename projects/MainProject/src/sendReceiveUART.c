@@ -20,8 +20,8 @@
 
 /* Global variables ----------------------------------------------------------*/
 volatile char rx_buffer;
- volatile char *buffer;
- volatile int head, tail;
+volatile char *buffer;
+volatile int head, tail,OK, FAIL;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -134,22 +134,22 @@ void USART_getc(USART_TypeDef* USARTx)
 //  return(c);
 }
 
-//void USART_getstr(USART_TypeDef* USARTx, char *str)
-//{
+void USART_getstr(USART_TypeDef* USARTx, char *str)
+{
 
-//	char c;
-//	
-//	while(c != '\r')
-//	{
-//		c = USART_getc(USARTx);
-//		//if(c == '\r')break;
-//  		USART_putc(USARTx, c);
-//	  *str = c;
-//		str++;
-//	}
-//	
-//	*str = '\0';
-//}
+	char c;
+	
+	while(c != '\r')
+	{
+		USART_getc(USARTx);
+		//if(c == '\r')break;
+  		USART_putc(USARTx, c);
+	  *str = c;
+		str++;
+	}
+	
+	*str = '\0';
+}
 
 
 // Implements the following VT100 terminal commands

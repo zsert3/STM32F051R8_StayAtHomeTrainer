@@ -30,7 +30,6 @@ int main(){
 	head = 0;
 	tail = 0;
 	
-		//not called
 	if (!buffer) {
 	//error
 	return 1; //return with failure
@@ -40,9 +39,10 @@ int main(){
 	STM_EVAL_LEDInit(LED3);
 	// Initialize User Button on STM32F0-Discovery
 	STM_EVAL_PBInit(BUTTON_USER, BUTTON_MODE_GPIO);
-	USART_putstr(USART1, "Start Init!\r\n");
 	WIFI_init();
+	
 	while(1){
+		
 		//sendATCommand();
 		//STM_EVAL_LEDOn(LED3);
 		USART_getc(USART1);	//print to usart1
@@ -52,12 +52,8 @@ int main(){
     {
 			STM_EVAL_LEDOn(LED3);
 			
-			
-			
-			//WIFI_sendCommand("GET http://www.stayathometrainer.nl/index.php HTTP/1.1");
-			
-			delay(SystemCoreClock/8); 
-			sendATCommand();
+			delay(SystemCoreClock/8);
+			WIFI_sendCommand("GET http://www.w3.org/pub/WWW/TheProject.html HTTP/1.1");
     }
     else
     {

@@ -29,13 +29,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
+#include "sendReceiveUART.h"
 #include "STM32F0_discovery.h"
 
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
 extern volatile char *buffer;
-extern volatile int head, tail;
+extern volatile int head, tail, OK, FAIL;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -113,7 +114,18 @@ void USART2_IRQHandler(void)
 	{
 		 // Read the data, clears the interrupt flag
 		 bufferVal = USART2->RDR;
-		 
+		
+		USART_putc(USART1, bufferVal);
+		 if(bufferVal == 'K'){
+			 OK = 1;
+		 }else{
+			 OK = 0;
+		 }
+		 if(bufferVal == 'L'){
+			FAIL = 1;
+		 }else{
+			 FAIL = 0;
+		 }
 		 //check if the position is free and prevent overwriting head position (head position always has a value != 0)
 			if(buffer[tail] == 0)
 			{

@@ -1,6 +1,6 @@
 /**
 ******************************************************************************
-* @file    	sendReceiveUART.h 
+* @file    	wifiComm.h 
 * @author 	
 * @version	V0.0.1
 * @date   	?? - ?? - ????
@@ -20,6 +20,7 @@ extern "C" {
 	
 /* Public functions --------------------------------------------------------*/
 	void WIFI_init(void);
+	void WIFI_reset(void);
 	void sendATCommand(void);
 	void WIFI_connect(void);
 	void WIFI_checkIP(void);

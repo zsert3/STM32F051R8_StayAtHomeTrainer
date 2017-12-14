@@ -10,7 +10,11 @@
 */
 
 char buf[100];
+extern volatile char *buffer;
+extern volatile int 	head, tail, OK, FAIL;
+
 /* Includes ------------------------------------------------------------------*/
+#include "wifiComm.h"
 #include "sendReceiveUART.h"
 #include "stm32f0xx.h"
 #include "stm32f0_discovery.h"
@@ -18,6 +22,10 @@ char buf[100];
 #include <stdio.h>
 
 void delay(const int d);
+
+void WIFI_reset(void){
+	USART_putstr(USART2, "AT+RST\r\n");
+}
 
 void sendATCommand(void){
 	USART_putstr(USART2, "AT\r\n");
@@ -31,12 +39,12 @@ void WIFI_connect(void){
 
 void WIFI_checkIP(void){
 	USART_putstr(USART2, "AT+CIFSR");
+	 
 	USART_putEnter();
 }
 
 void WIFI_connectServer(void){
-	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",21");
-	USART_putEnter();
+	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",21\r\n");
 }
 
 void WIFI_sendCommand(char* str){
@@ -45,15 +53,34 @@ void WIFI_sendCommand(char* str){
 	sprintf(buf, "AT+CIPSEND=%d", strlen(str));
 	USART_putstr(USART2, buf);	
 	USART_putEnter();
-	delay(SystemCoreClock/(8*10));
+	while(OK != 1);
 	USART_putstr(USART2, str);
 }
 
 
 void WIFI_init(void){
+	USART_putstr(USART1, "---------------------------Start Init---------------------------\r\n");
+	
+//	WIFI_reset();
+//	USART_putstr(USART1, "RESET...\r\n");
+//	while(OK != 1);
+//	USART_putstr(USART1, "---------------------------RESET DONE------------------\r\n");
 	WIFI_connect();
-//	delay(SystemCoreClock);
-//	WIFI_connectServer();
+	
+	USART_putstr(USART1, "Connecting to WIFI...\r\n");
+	
+	while(OK != 1){
+		//USART_getc(USART1);
+		if(FAIL == 1){
+			USART_putstr(USART1, "Connect with WIFI Failed!!\r\n");
+			WIFI_init();
+		}
+	}
+	delay(SystemCoreClock/(8*100));
+	USART_putstr(USART1, "Connecting with server...\r\n");
+	WIFI_connectServer();
+	while(OK != 1);
+	USART_putstr(USART1, "------------------------------Init Done--------------------------------\r\n");
 }
 
 void delay(const int d)
