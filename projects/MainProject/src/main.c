@@ -14,4 +14,5 @@
 
 int main(){
 	USART_init();
+	USART_putc('h');
 }
