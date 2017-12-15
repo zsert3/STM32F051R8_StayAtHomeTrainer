@@ -45,7 +45,7 @@ int main(){
 		
 		//sendATCommand();
 		//STM_EVAL_LEDOn(LED3);
-		USART_getc(USART1);	//print to usart1
+		//USART_getc(USART1);	//print to usart1
 		
 		//STM_EVAL_LEDOff(LED3);
 		if (STM_EVAL_PBGetState(BUTTON_USER))
@@ -53,7 +53,10 @@ int main(){
 			STM_EVAL_LEDOn(LED3);
 			
 			delay(SystemCoreClock/8);
-			WIFI_sendCommand("GET http://www.w3.org/pub/WWW/TheProject.html HTTP/1.1");
+			WIFI_sendCommand("USER n2jsq3g55axh\r\n\r\n");
+			delay(SystemCoreClock/4);
+			WIFI_sendCommand("PASS aKGEW6!#\r\n\r\n");
+			//WIFI_sendCommand("GET /HTTP/1.1\r\nstayathometrainer.nl/inloggen.php\r\n\r\n");
     }
     else
     {

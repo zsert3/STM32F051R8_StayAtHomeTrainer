@@ -20,8 +20,7 @@
 
 /* Global variables ----------------------------------------------------------*/
 volatile char rx_buffer;
-volatile char *buffer;
-volatile int head, tail,OK, FAIL;
+volatile int ok, fail, sFail;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -98,40 +97,40 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
 
 void USART_getc(USART_TypeDef* USARTx)
 {
-	
-	
-	if(buffer[head] != 0)
-	{
-	//print character
-	USART_putc(USARTx, buffer[head]);
-	
-	//clear character from head position
-	buffer[head] = 0;
-	
-	//increase head position
-	if(head == 99) 
-		head = 0;
-	else 
-		head++;
-	}	
-	
-	//busy waiting getc
-//  char c;
+//	
+//	
+//	if(buffer[head] != 0)
+//	{
+//	//print character
+//	USART_putc(USARTx, buffer[head]);
+//	
+//	//clear character from head position
+//	buffer[head] = 0;
+//	
+//	//increase head position
+//	if(head == 99) 
+//		head = 0;
+//	else 
+//		head++;
+//	}	
+//	
+//	//busy waiting getc
+////  char c;
 
-//  // Was there an Overrun error?
-//  if((USARTx->ISR & USART_ISR_ORE) != 0)
-//  {
-//    // Yes, clear it 
-//    USARTx->ICR |= USART_ICR_ORECF;
-//  }
+////  // Was there an Overrun error?
+////  if((USARTx->ISR & USART_ISR_ORE) != 0)
+////  {
+////    // Yes, clear it 
+////    USARTx->ICR |= USART_ICR_ORECF;
+////  }
 
-//  // Wait for data in the Receive Data Register
-//  while((USARTx->ISR & USART_ISR_RXNE) == 0) ;
+////  // Wait for data in the Receive Data Register
+////  while((USARTx->ISR & USART_ISR_RXNE) == 0) ;
 
-//  // Read data from RDR, clears the RXNE flag
-//  c = (char)USARTx->RDR;
+////  // Read data from RDR, clears the RXNE flag
+////  c = (char)USARTx->RDR;
 
-//  return(c);
+////  return(c);
 }
 
 void USART_getstr(USART_TypeDef* USARTx, char *str)

@@ -11,7 +11,7 @@
 
 char buf[100];
 extern volatile char *buffer;
-extern volatile int 	head, tail, OK, FAIL;
+extern volatile int 	head, tail, ok, fail, sFail;
 
 /* Includes ------------------------------------------------------------------*/
 #include "wifiComm.h"
@@ -33,6 +33,8 @@ void sendATCommand(void){
 }
 
 void WIFI_connect(void){
+	USART_putstr(USART1, "Connecting to WIFI...\r\n");
+	
 	USART_putstr(USART2, "AT+CWJAP=\"ESP8266\",\"123456789\"");
 	USART_putEnter();
 }
@@ -44,7 +46,8 @@ void WIFI_checkIP(void){
 }
 
 void WIFI_connectServer(void){
-	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",21\r\n");
+	USART_putstr(USART1, "Connecting with server...\r\n");
+	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",80\r\n");
 }
 
 void WIFI_sendCommand(char* str){
@@ -53,34 +56,36 @@ void WIFI_sendCommand(char* str){
 	sprintf(buf, "AT+CIPSEND=%d", strlen(str));
 	USART_putstr(USART2, buf);	
 	USART_putEnter();
-	while(OK != 1);
+	while(ok != 1);
 	USART_putstr(USART2, str);
 }
 
 
 void WIFI_init(void){
-	USART_putstr(USART1, "---------------------------Start Init---------------------------\r\n");
+	USART_putstr(USART1, "----------Start Init------- -\r\n");
 	
-//	WIFI_reset();
-//	USART_putstr(USART1, "RESET...\r\n");
-//	while(OK != 1);
-//	USART_putstr(USART1, "---------------------------RESET DONE------------------\r\n");
+	WIFI_reset();
+	USART_putstr(USART1, "RESET...\r\n");
+	while(ok != 1);
+	USART_putstr(USART1, "---------------------------RESET DONE------------------\r\n");
 	WIFI_connect();
 	
-	USART_putstr(USART1, "Connecting to WIFI...\r\n");
 	
-	while(OK != 1){
-		//USART_getc(USART1);
-		if(FAIL == 1){
+	
+	while(ok == 0){
+		if(fail == 1){
 			USART_putstr(USART1, "Connect with WIFI Failed!!\r\n");
-			WIFI_init();
+			WIFI_connect();
 		}
 	}
-	delay(SystemCoreClock/(8*100));
-	USART_putstr(USART1, "Connecting with server...\r\n");
 	WIFI_connectServer();
-	while(OK != 1);
-	USART_putstr(USART1, "------------------------------Init Done--------------------------------\r\n");
+	while(ok == 0){
+		if(sFail == 1){
+			USART_putstr(USART1, "Connect with server Failed!!\r\n");
+			WIFI_connectServer();
+		}
+	}
+	USART_putstr(USART1, "---------Init Done--------\r\n");
 }
 
 void delay(const int d)

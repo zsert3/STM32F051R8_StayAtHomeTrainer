@@ -35,8 +35,10 @@
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
-extern volatile char *buffer;
-extern volatile int head, tail, OK, FAIL;
+char buffer[100];
+int head, tail = 0;
+extern volatile int ok, fail, sFail;
+int lastBuffer;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -116,16 +118,22 @@ void USART2_IRQHandler(void)
 		 bufferVal = USART2->RDR;
 		
 		USART_putc(USART1, bufferVal);
-		 if(bufferVal == 'K'){
-			 OK = 1;
+		 if(lastBuffer == 'O' && bufferVal == 'K'){
+			 ok = 1;
 		 }else{
-			 OK = 0;
+			 ok = 0;
 		 }
-		 if(bufferVal == 'L'){
-			FAIL = 1;
+		 if(lastBuffer == 'I' && bufferVal == 'L'){
+			fail = 1;
 		 }else{
-			 FAIL = 0;
+			 fail = 0;
 		 }
+		 if(lastBuffer == 'O' && bufferVal == 'R'){
+			 sFail = 1;
+		 }else{
+			 sFail = 0;
+		 }
+		 lastBuffer = bufferVal;
 		 //check if the position is free and prevent overwriting head position (head position always has a value != 0)
 			if(buffer[tail] == 0)
 			{
