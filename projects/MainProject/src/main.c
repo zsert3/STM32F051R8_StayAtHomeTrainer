@@ -14,4 +14,6 @@
 
 int main(){
 	USART_init();
+	
+	
 }

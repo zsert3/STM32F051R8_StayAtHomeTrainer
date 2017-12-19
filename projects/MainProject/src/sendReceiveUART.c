@@ -81,10 +81,6 @@ void USART_putstr(char *str)
 {
   while(*str)
   {
-    if(*str == '\n')
-    {
-      USART_putc('\r');
-    }
     
     USART_putc(*str++);
   }
