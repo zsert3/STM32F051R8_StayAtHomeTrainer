@@ -34,6 +34,13 @@ void sendATCommand(void){
 void WIFI_connect(void){
 	USART_putstr(USART1, "Connecting to WIFI...\r\n");
 	USART_putstr(USART2, "AT+CWJAP=\"ESP8266\",\"123456789\"\r\n");
+	
+	while(ok == 0){
+		if(fail == 1){
+			USART_putstr(USART1, "Connect with WIFI Failed!!\r\n");
+			WIFI_connect();
+		}
+	}
 }
 
 void WIFI_checkIP(void){
@@ -45,16 +52,35 @@ void WIFI_connectServer(void){
 	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",80\r\n");
 	//Server IP: 160.153.129.214
 	//Local IP: 145.44.97.217
+	while(ok == 0){
+		if(sFail == 1){
+			USART_putstr(USART1, "Connect with server Failed!!\r\n");
+			WIFI_connectServer();
+		}
+	}
 }
 
-void WIFI_sendCommand(char* str){
-	//niet 4 maar length van str
-	char buf[20];
-	sprintf(buf, "AT+CIPSENDBUF=%d\r\n", strlen(str));
-	USART_putstr(USART2, buf);
+void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uint16_t fietsTijd, uint16_t intensiteit){
+	char contentLength[128];
+	char sendString[512];
+	char bufMessage[512];
+	char bufCommand[20];
+	
+	sprintf(sendString, "idT=0&idRT=%d&startTijd=%s %s&fTijd=%d&intensiteit=%d\r\n", idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
+	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 omdat \r\n niet mee telt
+	
+	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
+	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
+	strcat(bufMessage,"Content-Type:application/x-www-form-urlencoded\r\n");
+	strcat(bufMessage,"Cache-Control:no-cache\r\n");
+	strcat(bufMessage, contentLength);
+	strcat(bufMessage,"\r\n");
+	strcat(bufMessage, sendString);
+	
+	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
+	USART_putstr(USART2, bufCommand);
 	delay(SystemCoreClock/(8));
-	USART_putstr(USART2, str);
-	USART_putEnter();
+	USART_putstr(USART2, bufMessage);
 }
 
 void WIFI_checkConnection(void){
@@ -67,37 +93,20 @@ void WIFI_init(void){
 	USART_putstr(USART1, "----------Start Init--------\r\n");
 	
 	WIFI_checkConnection();
-	while(bufferVal != '3'){
-		if(bufferVal == '5'){
+	while(bufferVal != '3'){	//verbinding met wifi en server
+		if(bufferVal == '5'){		//geen verbinding
 			WIFI_connect();
-			while(ok == 0){
-				if(fail == 1){
-					USART_putstr(USART1, "Connect with WIFI Failed!!\r\n");
-					WIFI_connect();
-				}
-			}
 			WIFI_connectServer();
-			while(ok == 0){
-				if(sFail == 1){
-					USART_putstr(USART1, "Connect with server Failed!!\r\n");
-					WIFI_connectServer();
-				}
-			}
 			break;
-		}else if(bufferVal == '2' || bufferVal == '4'){
+		}else if(bufferVal == '2' || bufferVal == '4'){	//geen verbinding met server, wel met wifi
 			WIFI_connectServer();
-			while(ok == 0){
-				if(sFail == 1){
-					USART_putstr(USART1, "Connect with server Failed!!\r\n");
-					WIFI_connectServer();
-				}
-			}
 			break;
 		}
 	}
 	
 	
 	USART_putstr(USART1, "---------Init Done--------\r\n");
+	STM_EVAL_LEDOn(LED3);
 }
 
 void delay(const int d)

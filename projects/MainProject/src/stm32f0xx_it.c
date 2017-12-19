@@ -116,6 +116,7 @@ void USART2_IRQHandler(void)
 		 bufferVal = USART2->RDR;
 		
 		USART_putc(USART1, bufferVal);
+		//USART1->RDR = bufferVal;
 		 if(lastBuffer == 'O' && bufferVal == 'K'){
 			 ok = 1;
 		 }else{
