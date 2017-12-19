@@ -18,6 +18,7 @@
 
 #include <String.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 extern volatile char *buffer;
 extern volatile int head, tail;
@@ -42,21 +43,15 @@ int main(){
 	WIFI_init();
 	
 	while(1){
-		
-		//sendATCommand();
-		//STM_EVAL_LEDOn(LED3);
-		//USART_getc(USART1);	//print to usart1
-		
-		//STM_EVAL_LEDOff(LED3);
+
 		if (STM_EVAL_PBGetState(BUTTON_USER))
     {
 			STM_EVAL_LEDOn(LED3);
-			
 			delay(SystemCoreClock/8);
-			WIFI_sendCommand("USER n2jsq3g55axh\r\n\r\n");
-			delay(SystemCoreClock/4);
-			WIFI_sendCommand("PASS aKGEW6!#\r\n\r\n");
-			//WIFI_sendCommand("GET /HTTP/1.1\r\nstayathometrainer.nl/inloggen.php\r\n\r\n");
+			sprintf(buf, "GET  HTTP/1.1\r\n");
+			strcat(buf,"Host: stayathometrainer.nl\r\n");
+			strcat(buf,"Cache-Control: no-cache\r\n\r\n");
+			WIFI_sendCommand(buf);
     }
     else
     {

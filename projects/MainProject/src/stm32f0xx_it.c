@@ -37,8 +37,7 @@
 // ----------------------------------------------------------------------------
 char buffer[100];
 int head, tail = 0;
-extern volatile int ok, fail, sFail;
-int lastBuffer;
+extern volatile int ok, fail, sFail,lastBuffer, bufferVal;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -109,7 +108,6 @@ void SysTick_Handler(void)
 
 void USART2_IRQHandler(void)
 { 
-	char bufferVal;
 	
 	//Read Data Register not empty interrupt?
 	if(USART2->ISR & USART_ISR_RXNE)

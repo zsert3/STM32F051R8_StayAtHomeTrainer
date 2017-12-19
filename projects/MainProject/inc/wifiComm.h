@@ -26,6 +26,7 @@ extern "C" {
 	void WIFI_checkIP(void);
 	void WIFI_connectServer(void);
 	void WIFI_sendCommand(char* str);
+	void WIFI_checkConnection(void);
 	void delay();
 
 /* Public variables --------------------------------------------------------*/

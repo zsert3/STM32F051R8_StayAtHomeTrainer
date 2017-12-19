@@ -20,7 +20,7 @@
 
 /* Global variables ----------------------------------------------------------*/
 volatile char rx_buffer;
-volatile int ok, fail, sFail;
+volatile int ok, fail, sFail,lastBuffer, bufferVal;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -87,10 +87,7 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
 {
   while(*str)
   {
-    if(*str == '\n')
-    {
-      USART_putc(USARTx, '\r');
-    }
+    
     USART_putc(USARTx, *str++);
   }
 }
