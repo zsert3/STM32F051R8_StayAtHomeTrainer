@@ -51,7 +51,7 @@ int main(){
     {
 			
 			STM_EVAL_LEDOff(LED3);
-			delay(SystemCoreClock/8);
+			Delay(SystemCoreClock/8);
 			
 			WIFI_HTTPPost(idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
     }
