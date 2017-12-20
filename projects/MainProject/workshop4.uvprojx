@@ -10,8 +10,7 @@
       <TargetName>main</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
-      <uAC6>0</uAC6>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F051R8</Device>
@@ -474,6 +473,16 @@
               <FileName>sendReceiveUART.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\sendReceiveUART.c</FilePath>
+            </File>
+            <File>
+              <FileName>helper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\helper.c</FilePath>
+            </File>
+            <File>
+              <FileName>helper.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\helper.h</FilePath>
             </File>
           </Files>
         </Group>
