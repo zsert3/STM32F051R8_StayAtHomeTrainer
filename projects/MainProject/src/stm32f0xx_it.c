@@ -37,7 +37,7 @@
 // ----------------------------------------------------------------------------
 char buffer[100];
 int head, tail = 0;
-extern volatile int ok, fail, sFail,lastBuffer, bufferVal;
+extern volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -123,7 +123,7 @@ void USART2_IRQHandler(void)
 			 ok = 0;
 		 }
 		 if(lastBuffer == 'I' && bufferVal == 'L'){
-			fail = 1;
+			 fail = 1;
 		 }else{
 			 fail = 0;
 		 }
@@ -132,6 +132,13 @@ void USART2_IRQHandler(void)
 		 }else{
 			 sFail = 0;
 		 }
+		 if(lastBuffer == ':'){
+			 returnCode = bufferVal;
+		 }else{
+			 returnCode = 0;
+		 }
+		 
+		 
 		 lastBuffer = bufferVal;
 		 //check if the position is free and prevent overwriting head position (head position always has a value != 0)
 			if(buffer[tail] == 0)

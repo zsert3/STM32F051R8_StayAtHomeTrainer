@@ -1,17 +1,16 @@
 /**
 ******************************************************************************
-* @file    	coderingStandaard.h 
-* @author 	Example Example
+* @file    	wifiComm.c
+* @author 	Rick Winters
 * @version	V0.0.1
-* @date   	?? - ?? - ????
-* @brief  	Dit is een bestand met daarin voorbeelden van hoe de code 
-*			er uit moet zien. (leg uit in het kort wat dit bestand doet)
+* @date   	20-12-2017
+* @brief  	All functions associated with wifi communication are in this document
 ******************************************************************************
 */
 
-char buf[100];
+/* Global variables ----------------------------------------------------------*/
 extern volatile char *buffer;
-extern volatile int 	head, tail, ok, fail, sFail,lastBuffer, bufferVal;
+extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCode;
 
 /* Includes ------------------------------------------------------------------*/
 #include "wifiComm.h"
@@ -21,16 +20,37 @@ extern volatile int 	head, tail, ok, fail, sFail,lastBuffer, bufferVal;
 #include <String.h>
 #include <stdio.h>
 
+/* Private function prototypes -----------------------------------------------*/
 void delay(const int d);
 
+/**
+  * @brief  This function will reset the Wifi module
+  * @param  None
+	* @retval None
+  */
 void WIFI_reset(void){
 	USART_putstr(USART2, "AT+RST\r\n");
+	while(ok == 0);
 }
 
+/**
+  * @brief  This function will send an AT command to check
+						if the module is working correctly
+  * @param  None
+	* @retval None
+  */
 void sendATCommand(void){
 	USART_putstr(USART2, "AT\r\n");
+	while(ok == 0);
 }
 
+/**
+  * @brief  This function will make a connection with the wifi network.
+						For now a hard-coded SSID and password.
+						It will keep on running untill it has astablished a connection
+  * @param  None
+	* @retval None
+  */
 void WIFI_connect(void){
 	USART_putstr(USART1, "Connecting to WIFI...\r\n");
 	USART_putstr(USART2, "AT+CWJAP=\"ESP8266\",\"123456789\"\r\n");
@@ -43,10 +63,23 @@ void WIFI_connect(void){
 	}
 }
 
+/**
+  * @brief  This function will check for his current IP
+  * @param  None
+	* @retval None
+  */
 void WIFI_checkIP(void){
 	USART_putstr(USART2, "AT+CIFSR\r\n");
+	while(ok == 0);
 }
 
+/**
+  * @brief  This function will make a connection with the server.
+						For now hard-coded TCP address.
+						It will keep trying untill it has a connection
+  * @param  None
+	* @retval None
+  */
 void WIFI_connectServer(void){
 	USART_putstr(USART1, "Connecting with server...\r\n");
 	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",80\r\n");
@@ -60,6 +93,16 @@ void WIFI_connectServer(void){
 	}
 }
 
+/**
+  * @brief  This function sends a HTTP post message to the connected server.
+						It is still fairly static, the parameters are specific to our database
+  * @param  uint8_t idRevaladitie
+						char* startDatum
+						char* startTijd
+						uint16_t fietsTijd
+						uint16_t intensiteit
+	* @retval None
+  */
 void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uint16_t fietsTijd, uint16_t intensiteit){
 	char contentLength[128];
 	char sendString[512];
@@ -67,7 +110,7 @@ void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uin
 	char bufCommand[20];
 	
 	sprintf(sendString, "idT=0&idRT=%d&startTijd=%s %s&fTijd=%d&intensiteit=%d\r\n", idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
-	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 omdat \r\n niet mee telt
+	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
 	
 	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
 	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
@@ -83,27 +126,53 @@ void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uin
 	USART_putstr(USART2, bufMessage);
 }
 
-void WIFI_checkConnection(void){
+/**
+  * @brief  This function returns the state of the Wifi connection
+  * @param  None
+	* @retval 0: Error state
+						1: Wifi connected and server
+						2: Wifi connected, Server disconnected
+						3: Wifi disconnected
+  */
+uint8_t WIFI_checkConnection(void){
 	USART_putstr(USART2, "AT+CIPSTATUS\r\n");
+	//CIPSTATUS returns the state after it sends STATUS:
 	
+	while(returnCode == 0);	//waiting for : after STATUS
+
+	if(returnCode == '3'){	//Wifi connected and serverr
+		USART_putstr(USART1, "Check connection = 1\r\n");
+		return 1;
+	}else if(returnCode == '5'){	//Wifi disconnected
+		USART_putstr(USART1, "Check connection = 3\r\n");
+		return 3;
+	}else if(returnCode == '2' || bufferVal == '4'){	//Wifi connected, Server disconnected
+		USART_putstr(USART1, "Check connection = 2\r\n");
+		return 2;
+	}else{
+		USART_putstr(USART1, "Check connection = ERROR\r\n");
+		return 0;	//Error
+	}
 	
 }
 
+/**
+  * @brief  This function initialises a connection with wifi and the server.
+						The init will only be called once in the main function.
+  * @param  None
+	* @retval None
+  */
 void WIFI_init(void){
+	uint8_t retVal=0;
 	USART_putstr(USART1, "----------Start Init--------\r\n");
+	retVal = WIFI_checkConnection();
 	
-	WIFI_checkConnection();
-	while(bufferVal != '3'){	//verbinding met wifi en server
-		if(bufferVal == '5'){		//geen verbinding
-			WIFI_connect();
-			WIFI_connectServer();
-			break;
-		}else if(bufferVal == '2' || bufferVal == '4'){	//geen verbinding met server, wel met wifi
-			WIFI_connectServer();
-			break;
-		}
+	if(retVal == 3){		//No connection
+		WIFI_connect();
+		WIFI_connectServer();
+	}else if(retVal == 2){	//Wifi connected, Server disconnected
+		WIFI_connectServer();
 	}
-	
 	
 	USART_putstr(USART1, "---------Init Done--------\r\n");
 	STM_EVAL_LEDOn(LED3);

@@ -26,8 +26,8 @@ extern "C" {
 	void WIFI_checkIP(void);
 	void WIFI_connectServer(void);
 	void WIFI_HTTPPost(uint8_t idRevalidatie, char* startDatum, char* startTijd, uint16_t fietsTijd, uint16_t intensiteit);
-	void WIFI_checkConnection(void);
-	void delay();
+	uint8_t WIFI_checkConnection(void);
+	void delay(const int d);
 
 /* Public variables --------------------------------------------------------*/
 

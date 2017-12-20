@@ -20,7 +20,7 @@
 
 /* Global variables ----------------------------------------------------------*/
 volatile char rx_buffer;
-volatile int ok, fail, sFail,lastBuffer, bufferVal;
+volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

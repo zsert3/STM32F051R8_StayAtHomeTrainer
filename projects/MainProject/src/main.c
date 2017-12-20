@@ -50,7 +50,6 @@ int main(){
 		if (STM_EVAL_PBGetState(BUTTON_USER))
     {
 			
-			
 			STM_EVAL_LEDOff(LED3);
 			delay(SystemCoreClock/8);
 			
