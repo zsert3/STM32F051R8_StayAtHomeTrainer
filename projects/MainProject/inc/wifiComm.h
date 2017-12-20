@@ -17,6 +17,11 @@ extern "C" {
 	
 	#include "stdint.h"
 	#include "sendReceiveUART.h"
+	#include "sendReceiveUART.h"
+	#include "stm32f0xx.h"
+	#include "stm32f0_discovery.h"
+	#include <String.h>
+	#include <stdio.h>
 	
 /* Public functions --------------------------------------------------------*/
 	void WIFI_init(void);

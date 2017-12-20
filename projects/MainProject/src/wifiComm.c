@@ -14,11 +14,6 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
 
 /* Includes ------------------------------------------------------------------*/
 #include "wifiComm.h"
-#include "sendReceiveUART.h"
-#include "stm32f0xx.h"
-#include "stm32f0_discovery.h"
-#include <String.h>
-#include <stdio.h>
 
 /* Private function prototypes -----------------------------------------------*/
 void delay(const int d);
