@@ -127,9 +127,13 @@ void WIFI_HTTPPost2(revalidationData data)
 	char contentLength[128];
 	char bufMessage[512];
 	char bufCommand[20];
-	uint8_t *sendString = malloc(512 * sizeof(uint8_t));
-	sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d-%d-%d&fTijd=%d&intensiteit=%d\r\n", 3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD, 15, 23, 00);
-
+	char sendString[740];
+	USART_putstr(USART1, "HOOOI");
+	sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d:%d:%d&fTijd=%d&intensiteit=%d\r\n",
+												3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD.value,
+												15, 23, 00, data.duration.value, data.intensity.value);
+	//sprintf(sendString, "%d\r\n", data.intensity.value);
+	USART_putstr(USART1, sendString);
 	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
 	
 	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
