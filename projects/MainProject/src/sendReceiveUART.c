@@ -12,12 +12,16 @@
 #include "sendReceiveUART.h"
 #include "stm32f0xx.h"
 #include "stm32f0xx_usart.h"
+#include "stm32f0xx_rcc.h"
 #include "stm32f0xx_gpio.h"
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /* Global variables ----------------------------------------------------------*/
 volatile char rx_buffer;
+volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;;
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -28,115 +32,130 @@ volatile char rx_buffer;
 
 void USART_init(void)
 {
-	GPIO_InitTypeDef        GPIO_InitStructure;
-	USART_InitTypeDef				USART_InitStructure;
+	USART_InitTypeDef USART_InitStructure;
+	GPIO_InitTypeDef GPIO_InitStructure;
 	
-  // GPIOA Periph clock enable
-  RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2,ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource2, GPIO_AF_1);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource3, GPIO_AF_1);
+	GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_1);
+  GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_1);
+  //Configure USART2 pins: Rx (PA2) and Tx (PA3)
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_9 | GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  //Configure USART2 setting: ----------------------------
+  USART_InitStructure.USART_BaudRate = 115200;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 	
-  // PA9 and PA10 Alternate function mode
-  GPIOA->MODER |= (GPIO_MODER_MODER9_1 | GPIO_MODER_MODER10_1);
-  
-  // Set alternate functions AF1 for PA9 and PA10
-  GPIOA->AFR[1] |= 0x00000110;
-  
-  // USART1 clock enable
-  RCC->APB2ENR |= RCC_APB2ENR_USART1EN; 
-
-  // 115200 Bd @ 48 MHz
-  // USARTDIV = 48 MHz / 115200 = 416 = 0x01A0
-  // BRR[15:4] = USARTDIV[15:4]
-  // When OVER8 = 0, BRR [3:0] = USARTDIV [3:0]
-  USART1->BRR = 0x01A0;
-
-  // USART enable
-  // Receiver enable
-  // Transmitter enable
-  USART1->CR1 = USART_CR1_UE | USART_CR1_RE | USART_CR1_TE;
-
-  // Default value
-  USART1->CR2 = 0;
-  USART1->CR3 = 0; 
-  
-//   // RXNE interrupt enable
-//   USART1->CR1 |= USART_CR1_RXNEIE;
-//   
-//   // USART1 interrupts enable in NVIC
-//   NVIC_EnableIRQ(USART1_IRQn);
-//   NVIC_SetPriority(USART1_IRQn, 0);
-//   NVIC_ClearPendingIRQ(USART1_IRQn);
-
+  USART_Init(USART2, &USART_InitStructure);
+	USART_Init(USART1, &USART_InitStructure);
+	USART_Cmd(USART2,ENABLE);
+  USART_Cmd(USART1,ENABLE);
+	
+	/* Enable RXNE interrupt */
+	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+	/* Enable USART1 global interrupt */
+	NVIC_EnableIRQ(USART2_IRQn);
+	
 }
 
-void USART_putc(char c)
+void USART_putEnter(void){
+	USART_putc(USART2, '\r');
+	USART_putc(USART2, '\n');
+}
+
+void USART_putc(USART_TypeDef* USARTx, char c)
 {
   // Wait for Transmit data register empty
-  while((USART1->ISR & USART_ISR_TXE) == 0) ;
+  while((USARTx->ISR & USART_ISR_TXE) == 0) ;
 
   // Transmit data by writing to TDR, clears TXE flag  
-  USART1->TDR = c;
+  USARTx->TDR = c;
 }
 
-void USART_putstr(char *str)
+void USART_putstr(USART_TypeDef* USARTx, char *str)
 {
   while(*str)
   {
-    if(*str == '\n')
-    {
-      USART_putc('\r');
-    }
     
-    USART_putc(*str++);
+    USART_putc(USARTx, *str++);
   }
 }
 
-char USART_getc(void)
+void USART_getc(USART_TypeDef* USARTx)
 {
-  char c;
+//	
+//	
+//	if(buffer[head] != 0)
+//	{
+//	//print character
+//	USART_putc(USARTx, buffer[head]);
+//	
+//	//clear character from head position
+//	buffer[head] = 0;
+//	
+//	//increase head position
+//	if(head == 99) 
+//		head = 0;
+//	else 
+//		head++;
+//	}	
+//	
+//	//busy waiting getc
+////  char c;
 
-  // Was there an Overrun error?
-  if((USART1->ISR & USART_ISR_ORE) != 0)
-  {
-    // Yes, clear it 
-    USART1->ICR |= USART_ICR_ORECF;
-  }
+////  // Was there an Overrun error?
+////  if((USARTx->ISR & USART_ISR_ORE) != 0)
+////  {
+////    // Yes, clear it 
+////    USARTx->ICR |= USART_ICR_ORECF;
+////  }
 
-  // Wait for data in the Receive Data Register
-  while((USART1->ISR & USART_ISR_RXNE) == 0) ;
+////  // Wait for data in the Receive Data Register
+////  while((USARTx->ISR & USART_ISR_RXNE) == 0) ;
 
-  // Read data from RDR, clears the RXNE flag
-  c = (char)USART1->RDR;
+////  // Read data from RDR, clears the RXNE flag
+////  c = (char)USARTx->RDR;
 
-  return(c);
+////  return(c);
 }
 
-void USART_getstr(char *str)
+void USART_getstr(USART_TypeDef* USARTx, char *str)
 {
+
 	char c;
 	
-	
-	c = 0;
-  // Wait for data in the Receive Data Register
-	while(c !=  '\r'){
-		c = USART_getc();
-		*str = c;
-		USART_putc(*str);
+	while(c != '\r')
+	{
+		USART_getc(USARTx);
+		//if(c == '\r')break;
+  		USART_putc(USARTx, c);
+	  *str = c;
 		str++;
 	}
+	
 	*str = '\0';
-  // Read data from RDR, clears the RXNE flag
-  //c = (char)USART1->RDR;
-  // Implement this function yourself
 }
+
 
 // Implements the following VT100 terminal commands
 // - Clear screan
 // - Cursor home
-void USART_clearscreen(void)
+void USART_clearscreen(USART_TypeDef* USARTx)
 {
   char cmd1[5] = {0x1B, '[', '2', 'J', '\0'}; // Clear screen
   char cmd2[4] = {0x1B, '[', 'f', '\0'}; // Cursor home
   
-  USART_putstr(cmd1);
-  USART_putstr(cmd2);
+  USART_putstr(USARTx, cmd1);
+  USART_putstr(USARTx, cmd2);
 }

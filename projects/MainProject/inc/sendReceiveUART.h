@@ -16,14 +16,16 @@ extern "C" {
 #endif
 	
 	#include "stdint.h"
+	#include "stm32f0xx_usart.h"
 	
 /* Public functions --------------------------------------------------------*/
 	void USART_init(void);
-	void USART_putc(char c);
-	char USART_getc(void);
-	void USART_putstr(char *str);
-	void USART_getstr(char *str);
-	void USART_clearscreen(void);
+	void USART_putEnter(void);
+	void USART_putc(USART_TypeDef* USARTx, char c);
+	void USART_getc(USART_TypeDef* USARTx);
+	void USART_putstr(USART_TypeDef* USARTx, char *str);
+	void USART_getstr(USART_TypeDef* USARTx, char *str);
+	void USART_clearscreen(USART_TypeDef* USARTx);
 
 /* Public variables --------------------------------------------------------*/
 
