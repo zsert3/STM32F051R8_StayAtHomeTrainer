@@ -121,6 +121,32 @@ void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uin
 	USART_putstr(USART2, bufMessage);
 }
 
+
+void WIFI_HTTPPost2(revalidationData data)
+{
+	char contentLength[128];
+	char bufMessage[512];
+	char bufCommand[20];
+	uint8_t *sendString = malloc(512 * sizeof(uint8_t));
+	sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d-%d-%d&fTijd=%d&intensiteit=%d\r\n", 3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD, 15, 23, 00);
+
+	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
+	
+	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
+	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
+	strcat(bufMessage,"Content-Type:application/x-www-form-urlencoded\r\n");
+	strcat(bufMessage,"Cache-Control:no-cache\r\n");
+	strcat(bufMessage, contentLength);
+	strcat(bufMessage,"\r\n");
+	strcat(bufMessage, sendString);
+	
+	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
+	USART_putstr(USART2, bufCommand);
+	delay(SystemCoreClock/(8));
+	USART_putstr(USART2, bufMessage);
+}
+
+
 /**
   * @brief  This function returns the state of the Wifi connection
   * @param  None

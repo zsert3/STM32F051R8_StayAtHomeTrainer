@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 #include "stm32f0xx.h"
+#include <stdlib.h>
 
 typedef struct
 {

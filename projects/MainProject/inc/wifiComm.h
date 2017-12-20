@@ -20,6 +20,7 @@ extern "C" {
 	#include "sendReceiveUART.h"
 	#include "stm32f0xx.h"
 	#include "stm32f0_discovery.h"
+	#include "helper.h"
 	#include <String.h>
 	#include <stdio.h>
 	
@@ -31,6 +32,7 @@ extern "C" {
 	void WIFI_checkIP(void);
 	void WIFI_connectServer(void);
 	void WIFI_HTTPPost(uint8_t idRevalidatie, char* startDatum, char* startTijd, uint16_t fietsTijd, uint16_t intensiteit);
+	void WIFI_HTTPPost2(revalidationData data);
 	uint8_t WIFI_checkConnection(void);
 	void delay(const int d);
 

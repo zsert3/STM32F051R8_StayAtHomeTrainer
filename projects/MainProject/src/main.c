@@ -15,22 +15,27 @@
 #include "stm32f0xx_usart.h"
 #include "wifiComm.h"
 #include "stm32f0_discovery.h"
+#include "helper.h";
+#include "EEPROM.h";
 
 #include <String.h>
 #include <stdlib.h>
 #include <stdio.h>
 
+extern uint32_t EEPROM_CommStatus;
 extern volatile char *buffer;
 extern volatile int head, tail;
 
 
 int main(){	
 	uint8_t idRevaladitie = 3;
-	char startDatum[128] = "2017-02-5";
+	char startDatum[128] = "2017-02-6";
 	char startTijd[128] = "12-23-00";
 	uint16_t fietsTijd = 32450;
 	uint16_t intensiteit = 900;
-	
+	uint16_t addr = 0;
+	revalidationData dataSendRev;
+	revalidationData dataRecieveRev;
 	buffer = malloc(101 * sizeof(*buffer));
 	head = 0;
 	tail = 0;
@@ -45,15 +50,28 @@ int main(){
 	
 	WIFI_init();
 	
+	I2C_Setup();
+	
 	while(1){
 
-		if (STM_EVAL_PBGetState(BUTTON_USER))
+		if (STM_EVAL_PBGetState(BUTTON_USER) && EEPROM_CommStatus == EEPROM_COMM_OK)
     {
 			
 			STM_EVAL_LEDOff(LED3);
-			delay(SystemCoreClock/8);
+			Delay(SystemCoreClock/8);
+			dataSendRev.startDateYYYY.value = 1999;
+			dataSendRev.startDateMM.value = 10;
+			dataSendRev.startDateDD.value = 30;
+			dataSendRev.duration.value = 211;
+			dataSendRev.intensity.value = 666;
 			
-			WIFI_HTTPPost(idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
+			
+			EEPROM_setRevalidationData(128, dataRecieveRev);
+			
+			dataRecieveRev = EEPROM_getRevalidationData(128);
+			
+			WIFI_HTTPPost2(dataRecieveRev);
+			//WIFI_HTTPPost(idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
     }
     else
     {
