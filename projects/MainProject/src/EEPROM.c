@@ -9,10 +9,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "EEPROM.h"
-//#include "helper.h" 
-#include <stdlib.h>
-#include <stdio.h>
+#include "EEPROM.h" 
 
 /* Global variables ----------------------------------------------------------*/
 uint32_t EEPROM_CommStatus = EEPROM_COMM_OK;
@@ -116,7 +113,7 @@ void I2C_Setup(void)
 /**
   * @brief  This function returns the data from a page. 
   * @param  addr: 16-bit address of eeprom where data is written.
-  * @param  data: pointer to the adress(array) the data should be written to .
+  * @param  data: pointer to the adress(array) the data should be written to.
   * @retval None
   */
 void SE24LC512_ReadPage(uint16_t addr, uint8_t *data)

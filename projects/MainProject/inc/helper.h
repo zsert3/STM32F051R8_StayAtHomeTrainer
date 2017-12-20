@@ -17,9 +17,21 @@ extern "C" {
 
 #include "stm32f0xx.h"
 
+typedef struct
+{
+	uint64_t sumRPM ;
+	uint64_t sumTorgue;
+	uint64_t sumPower;
+	uint64_t sumAngle;
+	uint64_t sumSymmetry;
+}average;
+
 /* Public functions --------------------------------------------------------*/
 void Delay(const int d);
 void Delay2(const int d);
+void addData(uint16_t *i, average *sumData, uint16_t currentRPM, uint16_t currentTorgue, uint16_t currentPower, uint16_t currentAngle, uint16_t currentSymmetry);
+
+//average calcAverage(average currentAverage, currentData newData);
 /* Public variables --------------------------------------------------------*/
 typedef struct 
 {
@@ -30,6 +42,15 @@ typedef struct
 	union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;
 }revalidationData;
 
+typedef struct
+{
+	uint16_t currentRPM;
+	uint16_t currentTorgue;
+	uint16_t currentPower;
+	uint16_t currentAngle;
+	uint16_t currentSymmetry;
+}currentData;
+
 typedef struct 
 {
 		union {	uint16_t value; uint8_t bytes[2]; }duration;
@@ -39,7 +60,7 @@ typedef struct
 		
 		union {	uint16_t value; uint8_t bytes[2]; }averageRPM;
 		union {	uint16_t value; uint8_t bytes[2]; }averageTorgue;
-		union {	uint16_t value; uint8_t by tes[2]; }averagePower;
+		union {	uint16_t value; uint8_t bytes[2]; }averagePower;
 		union {	uint16_t value; uint8_t bytes[2]; }averageAngle;
 		union {	uint16_t value; uint8_t bytes[2]; }averageSymmetry;
 		union {	uint16_t value; uint8_t bytes[2]; }calories;
@@ -51,14 +72,8 @@ typedef struct
 	union {	uint64_t value; uint8_t bytes[8]; }randomData;
 }initPage;
 
-typedef struct
-{
-	uint64_t sumRPM;
-	uint64_t sumTorgue;
-	uint64_t sumPower;
-	uint64_t sumAngle;
-	uint64_t sumSymmetry;
-}average;
+
+
 
 #ifdef __cplusplus
 

@@ -17,6 +17,8 @@ extern "C" {
 
 #include "stm32f0xx.h"
 #include "helper.h"
+#include <stdlib.h>
+#include <stdio.h>
 	
 //device 7-bits address assuming A0=A1=A2=0
 #define EEPROM_ADDR               0xA0
@@ -38,7 +40,6 @@ initPage 					EEPROM_getInitPage(void);
 void 							EEPROM_setInitPage(initPage page);
 void 							EEPROM_setRevalidationData(uint16_t addr, revalidationData data);
 revalidationData 	EEPROM_getRevalidationData(uint16_t addr);
-
 /* Public variables --------------------------------------------------------*/
 
 #ifdef __cplusplus
