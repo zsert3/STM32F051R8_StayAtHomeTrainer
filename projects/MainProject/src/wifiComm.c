@@ -16,7 +16,7 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
 #include "wifiComm.h"
 
 /* Private function prototypes -----------------------------------------------*/
-void delay(const int d);
+
 
 /**
   * @brief  This function will reset the Wifi module

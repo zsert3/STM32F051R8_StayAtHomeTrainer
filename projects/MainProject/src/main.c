@@ -60,9 +60,9 @@ int main(){
 			STM_EVAL_LEDOff(LED3);
 			Delay(SystemCoreClock/8);
 
-			
 			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
 			EEPROM_setRevalidationData(128, dataSendRev);
+
 			
 			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
 			dataRecieveRev = EEPROM_getRevalidationData(128);

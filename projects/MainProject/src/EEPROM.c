@@ -154,9 +154,9 @@ void EEPROM_ReadPage(uint16_t addr, uint8_t *data)
 /**
   * @brief  This function writes up to 127 bytes data to the serial eeprom. 
   * @param  addr: 16-bit address of eeprom where data is written. 
-  * @param  data_ptr: 8-bit pointer to data to be written.
-	* @param  length: 8 bit length of the page (optional). 
-  * @param  lenght: number of bytes to be written (must be <= 127. 
+						data_ptr: 8-bit pointer to data to be written.
+						length: 8 bit length of the page (optional). 
+						lenght: number of bytes to be written (must be <= 127. 
   * @retval None
   */
 void EEPROM_WritePage(uint16_t addr, uint8_t *data_ptr)
