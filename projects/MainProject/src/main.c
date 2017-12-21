@@ -23,7 +23,6 @@
 #include <stdio.h>
 
 extern uint32_t EEPROM_CommStatus;
-extern volatile char *buffer;
 extern volatile int head, tail;
 
 
@@ -31,7 +30,6 @@ int main(){
 
 	revalidationData dataSendRev;
 	revalidationData dataRecieveRev;
-	//buffer = malloc(101 * sizeof(*buffer));
 	head = 0;
 	tail = 0;
 	

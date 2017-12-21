@@ -19,7 +19,7 @@
 #include <stdlib.h>
 
 /* Global variables ----------------------------------------------------------*/
-volatile char rx_buffer;
+volatile char* buffer;
 volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;;
 
 /* Private typedef -----------------------------------------------------------*/
@@ -130,21 +130,32 @@ void USART_getc(USART_TypeDef* USARTx)
 ////  return(c);
 }
 
-void USART_getstr(USART_TypeDef* USARTx, char *str)
+char* USART_getstr(USART_TypeDef* USARTx, char* str)
 {
-
-	char c;
+	//constant veranderende data uit buffer vanaf interrupt
+	//misschien while loop tot eerste char van Parameter str langs komt
+	//zodra die voorbij is een while loop tot laatste char van str, in tussen tijd alles opslaan in buf
+	uint8_t strLen = 0;
+	char* buf;
 	
-	while(c != '\r')
-	{
-		USART_getc(USARTx);
-		//if(c == '\r')break;
-  		USART_putc(USARTx, c);
-	  *str = c;
-		str++;
+	strLen = strlen(str);
+	while(*buffer != *str){}	//waiting for first bit of str
+	str += strLen;						//End of str
+	while(*buffer != *str){
+		*buf = *str;
+		buf++;
 	}
 	
-	*str = '\0';
+//		USART_getc(USARTx);
+//		//if(c == '\r')break;
+//  		USART_putc(USARTx, c);
+//	  *str = c;
+//		str++;
+
+	
+	*buf = '\0';
+	
+	return buf;
 }
 
 

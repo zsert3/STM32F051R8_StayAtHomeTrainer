@@ -35,7 +35,7 @@
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
-char buffer[100];
+extern volatile char* buffer;
 int head, tail = 0;
 extern volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;
 /* Private typedef -----------------------------------------------------------*/
