@@ -16,12 +16,11 @@ uint32_t EEPROM_CommStatus = EEPROM_COMM_OK;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define PAGE_LENGTH 126
-#define EEPROM_MAXADRESSES				((uint16_t)(500))
+#define EEPROM_MAXADRESSES ((uint16_t)(500))
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-void SE24LC512_ReadPage(uint16_t addr, uint8_t *data);
-void SE24LC512_WritePage(uint16_t addr, uint8_t* data_ptr);
+
 void SE_WaitForI2CFlag(uint32_t flag);
 /* Private functions ---------------------------------------------------------*/
 
@@ -116,7 +115,7 @@ void I2C_Setup(void)
   * @param  data: pointer to the adress(array) the data should be written to.
   * @retval None
   */
-void SE24LC512_ReadPage(uint16_t addr, uint8_t *data)
+void EEPROM_ReadPage(uint16_t addr, uint8_t *data)
 {
 	
 	uint8_t i = 0;
@@ -160,7 +159,7 @@ void SE24LC512_ReadPage(uint16_t addr, uint8_t *data)
   * @param  lenght: number of bytes to be written (must be <= 127. 
   * @retval None
   */
-void SE24LC512_WritePage(uint16_t addr, uint8_t *data_ptr)
+void EEPROM_WritePage(uint16_t addr, uint8_t *data_ptr)
 {
 		uint8_t i; 
 
@@ -235,7 +234,7 @@ void SE_WaitForI2CFlag(uint32_t flag)
   * @param  None
   * @retval None
   */
-void SE24LC512_Clear(void)
+void EEPROM_Clear(void)
 {
 		//uint8_t data[126] = {0xFF};
 		uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t)); 
@@ -249,7 +248,7 @@ void SE24LC512_Clear(void)
 		
 	  for(i = 0; i < EEPROM_MAXADRESSES - 1; i++) 
 		{
-			SE24LC512_WritePage(addr * 128, data);
+			EEPROM_WritePage(addr * 128, data);
 		}	
 		
 		free(data);
@@ -269,7 +268,7 @@ void EEPROM_setInitPage(initPage page)
 	memcpy(total + totalSize, page.randomData.bytes, totalSize + sizeof(page.randomData));
 	
 	//write init page to start adress
-	SE24LC512_WritePage(0, total);
+	EEPROM_WritePage(0, total);
 	free(total);
 }
 
@@ -280,7 +279,7 @@ initPage EEPROM_getInitPage()
 	uint8_t totalSize = 0;
 	uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t)); 
 	
-	SE24LC512_ReadPage(0, data);
+	EEPROM_ReadPage(0, data);
 	
 	//set tail adress
 	memcpy(page.tailAdress.bytes, data + totalSize, sizeof(page.tailAdress));
@@ -300,7 +299,7 @@ revalidationData EEPROM_getRevalidationData(uint16_t addr)
 	uint8_t totalSize = 0;
 	uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t));
 	
-	SE24LC512_ReadPage(addr, data);
+	EEPROM_ReadPage(addr, data);
 	
 	memcpy(revData.duration.bytes, data + totalSize, sizeof(revData.duration));
 	totalSize += sizeof(revData.duration);
@@ -341,7 +340,7 @@ void EEPROM_setRevalidationData(uint16_t addr, revalidationData data)
 	
 	memcpy(total + totalSize, data.startDateYYYY.bytes, totalSize + sizeof(data.startDateYYYY));
 	
-	SE24LC512_WritePage(addr, total);
+	EEPROM_WritePage(addr, total);
 	free(total);
 }
 
