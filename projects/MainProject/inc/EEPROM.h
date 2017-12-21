@@ -34,8 +34,10 @@ extern "C" {
 #define EEPROM_COMM_ERROR         (0x1)
 	
 /* Public functions --------------------------------------------------------*/
-void    					I2C_Setup( void );
-void    					SE24LC512_Clear(void);
+void    					I2C_Setup(void);
+void    					EEPROM_Clear(void);
+void 							EEPROM_ReadPage(uint16_t addr, uint8_t *data);
+void 							EEPROM_WritePage(uint16_t addr, uint8_t* data_ptr);
 initPage 					EEPROM_getInitPage(void); 
 void 							EEPROM_setInitPage(initPage page);
 void 							EEPROM_setRevalidationData(uint16_t addr, revalidationData data);
