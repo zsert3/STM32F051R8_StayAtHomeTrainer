@@ -25,7 +25,7 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
   */
 void WIFI_reset(void){
 	USART_putstr(USART2, "AT+RST\r\n");
-	USART_getstr(USART1, "OK");
+	USART_getstr(USART1, "OK", "");
 }
 
 /**
@@ -36,8 +36,8 @@ void WIFI_reset(void){
   */
 void sendATCommand(void){
 	USART_putstr(USART2, "AT\r\n");
-	USART_getstr(USART2, "OK");
-	
+	USART_getstr(USART1, "OK", "");
+
 }
 
 /**
@@ -51,12 +51,17 @@ void WIFI_connect(void){
 	USART_putstr(USART1, "Connecting to WIFI...\r\n");
 	USART_putstr(USART2, "AT+CWJAP=\"ESP8266\",\"123456789\"\r\n");
 	
-	while(ok == 0){
-		if(fail == 1){
-			USART_putstr(USART1, "Connect with WIFI Failed!!\r\n");
-			WIFI_connect();
-		}
+	if(USART_getstr(USART1, "OK", "FAIL") == 1){
+	}else{
+		USART_putstr(USART1, "Connect with wifi Failed!!\r\n");
+		WIFI_connect();
 	}
+	
+//	while(ok == 0){
+//		if(fail == 1){
+//			
+//		}
+//	}
 }
 
 /**
@@ -66,7 +71,7 @@ void WIFI_connect(void){
   */
 void WIFI_checkIP(void){
 	USART_putstr(USART2, "AT+CIFSR\r\n");
-	while(ok == 0);
+	USART_getstr(USART1, "OK", "");
 }
 
 /**
@@ -81,12 +86,12 @@ void WIFI_connectServer(void){
 	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",80\r\n");
 	//Server IP: 160.153.129.214
 	//Local IP: 145.44.97.217
-	while(ok == 0){
-		if(sFail == 1){
-			USART_putstr(USART1, "Connect with server Failed!!\r\n");
-			WIFI_connectServer();
-		}
+	if(USART_getstr(USART1, "OK", "FAIL") == 1){
+	}else{
+		USART_putstr(USART1, "Connect with server Failed!!\r\n");
+		WIFI_connectServer();
 	}
+
 }
 
 /**

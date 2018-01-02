@@ -25,6 +25,7 @@ volatile char lastBuffer, bufferVal;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#define TIMEOUT 214748364
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -130,34 +131,70 @@ void USART_getc(USART_TypeDef* USARTx)
 ////  return(c);
 }
 
-uint8_t USART_getstr(USART_TypeDef* USARTx, char* str)
+uint8_t USART_getstr(USART_TypeDef* USARTx, char* str1, char* str2)
 {
-	//constant veranderende data uit buffer vanaf interrupt
-	//misschien while loop tot eerste char van Parameter str langs komt
-	//zodra die voorbij is een while loop tot laatste char van str, in tussen tijd alles opslaan in buf
-	uint8_t strLen, i = 0;
+	uint32_t getstrTimeout;
+	uint8_t strLen1, strLen2, i = 0;
+	char* nextString;
 	
-	strLen = strlen(str);
-	  
-	while(bufferVal != *str);		//waiting for first bit of str 
-	USART_putstr(USARTx, "eerste gevonden!!\r\n");
-	str++;
-	for(i = 1; i<strLen; i++){
-		isSet = 0; 
-		while(!isSet);	//set from interrupt
+	strLen1 = strlen(str1);
+	strLen2 = strlen(str2);
+	
+	nextString = str1;
+	nextString++;
+	while(1){
 		
-		if(bufferVal != *str){
-			USART_putstr(USARTx, "ALLES IS KAPOT!!\r\n");
-			return 0;
+		if(lastBuffer == *str1 && bufferVal == *nextString){
 			break;
 		}
-		USART_putstr(USARTx, "Nog een gevonden!!\r\n");
-		str++;
+	}
+//		if(bufferVal == *str2){
+//			str2++;
+//			for(i = 1; i<strLen2; i++){
+//				isSet = 0; 
+//				while(!isSet);	//set from interrupt
+//				isSet= 0;
+//				if(bufferVal != *str2){
+//					//USART_putstr(USARTx, "ALLES IS KAPOT!!\r\n");
+//					return 0;
+//					break;
+//				}else{
+//					//USART_putstr(USARTx, "Nog een gevonden!!\r\n");
+//					str2++;
+//				}
+//			}
+//			return 2;
+//		}
+		
+		
+//		getstrTimeout++;
+//		if(getstrTimeout == TIMEOUT){
+//			USART_putstr(USART1, "TIMEOUT");
+//			return 0;
+//			break;
+//		}
+
+	
+	//waiting for first bit of str 
+	//USART_putstr(USARTx, "eerste gevonden!!\r\n");
+	str1++;
+	for(i = 2; i<strLen1; i++){
+		isSet = 0; 
+		while(!isSet);	//set from interrupt
+		isSet= 0;
+		if(bufferVal != *str1){
+			//USART_putstr(USARTx, "ALLES IS KAPOT!!\r\n");
+			return 0;
+			break;
+		}else{
+			//USART_putstr(USARTx, "Nog een gevonden!!\r\n");
+			str1++;
+		}
 	}
 
 	
 	
-	USART_putstr(USART2, "ALLES KLAAAAR!\r\n");
+	//USART_putstr(USARTx, "ALLES KLAAAAR!\r\n");
 
 	return 1;
 }

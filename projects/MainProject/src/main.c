@@ -56,9 +56,8 @@ int main(){
 			STM_EVAL_LEDOff(LED3);
 			
 			
-			USART_putstr(USART2, "BEGIN!\r\n");
-			USART_putc(USART2, USART_getstr(USART1, "HOOOI"));
-
+			sendATCommand();
+			
 //			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
 //			EEPROM_setRevalidationData(128, dataSendRev);
 //			
