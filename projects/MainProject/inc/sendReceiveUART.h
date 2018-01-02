@@ -25,7 +25,7 @@ extern "C" {
 	void USART_putc(USART_TypeDef* USARTx, char c);
 	void USART_getc(USART_TypeDef* USARTx);
 	void USART_putstr(USART_TypeDef* USARTx, char *str);
-	char* USART_getstr(USART_TypeDef* USARTx, char *str);
+	uint8_t USART_getstr(USART_TypeDef* USARTx, char *str);
 	void USART_clearscreen(USART_TypeDef* USARTx);
 
 /* Public variables --------------------------------------------------------*/

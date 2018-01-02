@@ -37,7 +37,8 @@
 // ----------------------------------------------------------------------------
 extern volatile char* buffer;
 int head, tail = 0;
-extern volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;
+extern volatile int ok, fail, sFail, returnCode, isSet;
+extern volatile char lastBuffer, bufferVal;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -113,9 +114,10 @@ void USART2_IRQHandler(void)
 	if(USART2->ISR & USART_ISR_RXNE)
 	{
 		 // Read the data, clears the interrupt flag
-		 bufferVal = USART2->RDR;
+		bufferVal = USART2->RDR;
 		
 		USART_putc(USART1, bufferVal);
+		isSet = 1;		//reset when used
 		//USART1->RDR = bufferVal;
 		 if(lastBuffer == 'O' && bufferVal == 'K'){
 			 ok = 1;

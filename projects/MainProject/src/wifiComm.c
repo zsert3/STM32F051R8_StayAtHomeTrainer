@@ -25,7 +25,7 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
   */
 void WIFI_reset(void){
 	USART_putstr(USART2, "AT+RST\r\n");
-	while(ok == 0);
+	USART_getstr(USART1, "OK");
 }
 
 /**
@@ -36,7 +36,8 @@ void WIFI_reset(void){
   */
 void sendATCommand(void){
 	USART_putstr(USART2, "AT\r\n");
-	while(ok == 0);
+	USART_getstr(USART2, "OK");
+	
 }
 
 /**

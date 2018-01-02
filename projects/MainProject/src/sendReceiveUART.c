@@ -20,7 +20,8 @@
 
 /* Global variables ----------------------------------------------------------*/
 volatile char* buffer;
-volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;;
+volatile int ok, fail, sFail, returnCode, isSet;
+volatile char lastBuffer, bufferVal;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -87,7 +88,6 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
 {
   while(*str)
   {
-    
     USART_putc(USARTx, *str++);
   }
 }
@@ -130,32 +130,36 @@ void USART_getc(USART_TypeDef* USARTx)
 ////  return(c);
 }
 
-char* USART_getstr(USART_TypeDef* USARTx, char* str)
+uint8_t USART_getstr(USART_TypeDef* USARTx, char* str)
 {
 	//constant veranderende data uit buffer vanaf interrupt
 	//misschien while loop tot eerste char van Parameter str langs komt
 	//zodra die voorbij is een while loop tot laatste char van str, in tussen tijd alles opslaan in buf
-	uint8_t strLen = 0;
-	char* buf;
+	uint8_t strLen, i = 0;
 	
 	strLen = strlen(str);
-	while(*buffer != *str){}	//waiting for first bit of str
-	str += strLen;						//End of str
-	while(*buffer != *str){
-		*buf = *str;
-		buf++;
+	  
+	while(bufferVal != *str);		//waiting for first bit of str 
+	USART_putstr(USARTx, "eerste gevonden!!\r\n");
+	str++;
+	for(i = 1; i<strLen; i++){
+		isSet = 0; 
+		while(!isSet);	//set from interrupt
+		
+		if(bufferVal != *str){
+			USART_putstr(USARTx, "ALLES IS KAPOT!!\r\n");
+			return 0;
+			break;
+		}
+		USART_putstr(USARTx, "Nog een gevonden!!\r\n");
+		str++;
 	}
-	
-//		USART_getc(USARTx);
-//		//if(c == '\r')break;
-//  		USART_putc(USARTx, c);
-//	  *str = c;
-//		str++;
 
 	
-	*buf = '\0';
 	
-	return buf;
+	USART_putstr(USART2, "ALLES KLAAAAR!\r\n");
+
+	return 1;
 }
 
 

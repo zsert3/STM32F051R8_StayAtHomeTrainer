@@ -37,7 +37,7 @@ void addData(uint16_t *i, average *sumData, uint16_t currentRPM, uint16_t curren
 typedef struct 
 {
 	union {	uint16_t value; uint8_t bytes[2]; }duration;
-	union { uint32_t value; uint8_t bytes[4]; }intensity;
+	union { int32_t value; uint8_t bytes[4]; }intensity;
 	union { uint8_t value; uint8_t bytes[1]; }startDateDD;
 	union { uint8_t value; uint8_t bytes[1]; }startDateMM;
 	union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;

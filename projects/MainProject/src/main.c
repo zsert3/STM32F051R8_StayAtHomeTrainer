@@ -27,14 +27,14 @@ extern volatile int head, tail;
 
 
 int main(){	
-
+	char buf[100];
 	revalidationData dataSendRev;
 	revalidationData dataRecieveRev;
 	head = 0;
 	tail = 0;
 	
 	dataSendRev.duration.value = 600;
-	dataSendRev.intensity.value = 20;
+	dataSendRev.intensity.value = -20;
 	dataSendRev.startDateDD.value = 3;
 	dataSendRev.startDateMM.value = 12;
 	dataSendRev.startDateYYYY.value = 1996;
@@ -49,25 +49,27 @@ int main(){
 	WIFI_init();
 	
 	I2C_Setup();
-	
 	while(1){
 
 		if (STM_EVAL_PBGetState(BUTTON_USER) && EEPROM_CommStatus == EEPROM_COMM_OK)
     {
-			
 			STM_EVAL_LEDOff(LED3);
-			Delay(SystemCoreClock/8);
-
-			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
-			EEPROM_setRevalidationData(128, dataSendRev);
-
 			
-			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
-			dataRecieveRev = EEPROM_getRevalidationData(128);
+			
+			USART_putstr(USART2, "BEGIN!\r\n");
+			USART_putc(USART2, USART_getstr(USART1, "HOOOI"));
 
-			USART_putstr(USART1, "Data verzenden naar server\r\n");
-	
-			WIFI_HTTPPost2(dataRecieveRev);
+//			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
+//			EEPROM_setRevalidationData(128, dataSendRev);
+//			
+//			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
+//			dataRecieveRev = EEPROM_getRevalidationData(128);
+
+//			USART_putstr(USART1, "Data verzenden naar server\r\n");
+//	
+//			WIFI_HTTPPost2(dataRecieveRev);
+			
+			Delay(SystemCoreClock/8);
     }
     else
     {
