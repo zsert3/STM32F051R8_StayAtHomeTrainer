@@ -119,21 +119,21 @@ void USART2_IRQHandler(void)
 		USART_putc(USART1, bufferVal);
 		isSet = 1;		//reset when used
 		//USART1->RDR = bufferVal;
-		 if(lastBuffer == 'O' && bufferVal == 'K'){
-			 ok = 1;
-		 }else{
-			 ok = 0;
-		 }
-		 if(lastBuffer == 'I' && bufferVal == 'L'){
-			 fail = 1;
-		 }else{
-			 fail = 0;
-		 }
-		 if(lastBuffer == 'O' && bufferVal == 'R'){
-			 sFail = 1;
-		 }else{
-			 sFail = 0;
-		 }
+//		 if(lastBuffer == 'O' && bufferVal == 'K'){
+//			 ok = 1;
+//		 }else{
+//			 ok = 0;
+//		 }
+//		 if(lastBuffer == 'I' && bufferVal == 'L'){
+//			 fail = 1;
+//		 }else{
+//			 fail = 0;
+//		 }
+//		 if(lastBuffer == 'O' && bufferVal == 'R'){
+//			 sFail = 1;
+//		 }else{
+//			 sFail = 0;
+//		 }
 		 if(lastBuffer == ':'){
 			 returnCode = bufferVal;
 		 }else{
@@ -143,17 +143,17 @@ void USART2_IRQHandler(void)
 		 
 		 lastBuffer = bufferVal;
 		 //check if the position is free and prevent overwriting head position (head position always has a value != 0)
-			if(buffer[tail] == 0)
-			{
-			 //add input character to buffer
-			 buffer[tail] = bufferVal;	
-			 
-			 //increase tail posiiton
-			 if(tail == 99)
-				 tail = 0;
-			 else
-				 tail++;
-		 }
+//			if(buffer[tail] == 0)
+//			{
+//			 //add input character to buffer
+//			 buffer[tail] = bufferVal;	
+//			 
+//			 //increase tail posiiton
+//			 if(tail == 99)
+//				 tail = 0;
+//			 else
+//				 tail++;
+//		 }
 	}
 }
 

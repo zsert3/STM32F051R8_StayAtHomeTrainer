@@ -25,7 +25,7 @@ volatile char lastBuffer, bufferVal;
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-#define TIMEOUT 214748364
+#define TIMEOUT 200000
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -93,110 +93,64 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
   }
 }
 
-void USART_getc(USART_TypeDef* USARTx)
+
+/**
+  * @brief  This function waits untill str1 is received through USART2
+						for instance 'OK' when a message is send correctly
+	* @param 	str: this is the string the function will search for
+						timeOut: how many times can the function try before it quits	!!can probably be hardcoded!!
+	* @retval 0: Error state
+						1: String found]
+  */
+uint8_t USART_getstr(char* str, uint8_t timeOut)
 {
-//	
-//	
-//	if(buffer[head] != 0)
-//	{
-//	//print character
-//	USART_putc(USARTx, buffer[head]);
-//	
-//	//clear character from head position
-//	buffer[head] = 0;
-//	
-//	//increase head position
-//	if(head == 99) 
-//		head = 0;
-//	else 
-//		head++;
-//	}	
-//	
-//	//busy waiting getc
-////  char c;
-
-////  // Was there an Overrun error?
-////  if((USARTx->ISR & USART_ISR_ORE) != 0)
-////  {
-////    // Yes, clear it 
-////    USARTx->ICR |= USART_ICR_ORECF;
-////  }
-
-////  // Wait for data in the Receive Data Register
-////  while((USARTx->ISR & USART_ISR_RXNE) == 0) ;
-
-////  // Read data from RDR, clears the RXNE flag
-////  c = (char)USARTx->RDR;
-
-////  return(c);
-}
-
-uint8_t USART_getstr(USART_TypeDef* USARTx, char* str1, char* str2)
-{
-	uint32_t getstrTimeout;
-	uint8_t strLen1, strLen2, i = 0;
-	char* nextString;
+	uint32_t getstrTimeout = 0;
+	uint8_t i;
+	uint8_t strLen = 0;
+	char* buf;
 	
-	strLen1 = strlen(str1);
-	strLen2 = strlen(str2);
-	
-	nextString = str1;
-	nextString++;
-	while(1){
+	strLen = strlen(str);
+
+	while(timeOut > 0){
 		
-		if(lastBuffer == *str1 && bufferVal == *nextString){
-			break;
+		while(bufferVal != *str){	//waiting for first bit of str 
+			getstrTimeout++;
+			sprintf(buf, "%d", getstrTimeout);
+			//USART_putstr(USART1,buf);
+			if(getstrTimeout == TIMEOUT){	//if timeout is reached, return 0
+				USART_putstr(USART1, "TIMEOUT\r\n");
+				return 0;
+			}
+		}
+		
+		//search for next chars
+		for(i = 1; i<strLen; i++){
+			str++;
+			isSet = 0; 
+			while(!isSet);	//set from interrupt when a new char comes in
+			
+			if(bufferVal != *str){
+				//USART_putstr(USART1, "ALLES IS KAPOT!!\r\n");
+				
+				str -= i;
+				timeOut--;
+				break;
+			}else{
+				//USART_putstr(USART1, "Nog een gevonden!!\r\n");
+				if(i == strLen-1){
+					return 1;
+				}
+			}
 		}
 	}
-//		if(bufferVal == *str2){
-//			str2++;
-//			for(i = 1; i<strLen2; i++){
-//				isSet = 0; 
-//				while(!isSet);	//set from interrupt
-//				isSet= 0;
-//				if(bufferVal != *str2){
-//					//USART_putstr(USARTx, "ALLES IS KAPOT!!\r\n");
-//					return 0;
-//					break;
-//				}else{
-//					//USART_putstr(USARTx, "Nog een gevonden!!\r\n");
-//					str2++;
-//				}
-//			}
-//			return 2;
-//		}
-		
-		
-//		getstrTimeout++;
-//		if(getstrTimeout == TIMEOUT){
-//			USART_putstr(USART1, "TIMEOUT");
-//			return 0;
-//			break;
-//		}
-
 	
-	//waiting for first bit of str 
-	//USART_putstr(USARTx, "eerste gevonden!!\r\n");
-	str1++;
-	for(i = 2; i<strLen1; i++){
-		isSet = 0; 
-		while(!isSet);	//set from interrupt
-		isSet= 0;
-		if(bufferVal != *str1){
-			//USART_putstr(USARTx, "ALLES IS KAPOT!!\r\n");
-			return 0;
-			break;
-		}else{
-			//USART_putstr(USARTx, "Nog een gevonden!!\r\n");
-			str1++;
-		}
+	if(timeOut == 0){
+		return 0;
+	}else{
+		//USART_putstr(USART1, "ALLES KLAAAAR!\r\n");
+		return 1;
 	}
-
 	
-	
-	//USART_putstr(USARTx, "ALLES KLAAAAR!\r\n");
-
-	return 1;
 }
 
 
