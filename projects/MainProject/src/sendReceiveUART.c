@@ -20,7 +20,7 @@
 
 /* Global variables ----------------------------------------------------------*/
 volatile char* buffer;
-volatile int ok, fail, sFail, returnCode, isSet;
+volatile int ok, fail, sFail, returnCode, isSet, timeOutIT;
 volatile char lastBuffer, bufferVal;
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,23 +102,33 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
 	* @retval 0: Error state
 						1: String found]
   */
-uint8_t USART_getstr(char* str, uint8_t timeOut)
+uint8_t USART_getstr(char* str)
 {
-	uint32_t getstrTimeout = 0;
 	uint8_t i;
 	uint8_t strLen = 0;
-	char* buf;
+	uint8_t timeOut = 8;
 	
+	timeOutIT = 0;
 	strLen = strlen(str);
-
+	
+	//Start timeout Timer
+	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	TIM_Cmd(TIM2, ENABLE);
+	
 	while(timeOut > 0){
 		
-		while(bufferVal != *str){	//waiting for first bit of str 
-			getstrTimeout++;
-			sprintf(buf, "%d", getstrTimeout);
-			//USART_putstr(USART1,buf);
-			if(getstrTimeout == TIMEOUT){	//if timeout is reached, return 0
+		while(bufferVal != *str){	//waiting for first bit of str !!TIMER INTERRUPT!!
+//			getstrTimeout++;
+//			sprintf(buf, "%d", getstrTimeout);
+//			//USART_putstr(USART1,buf);
+//			if(getstrTimeout == TIMEOUT){	//if timeout is reached, return 0
+//				USART_putstr(USART1, "TIMEOUT\r\n");
+//				return 0;
+//			}
+			if(timeOutIT == 1){
 				USART_putstr(USART1, "TIMEOUT\r\n");
+				timeOut = 0;
+				//TIM_Cmd(TIM2, DISABLE);	//stop timer
 				return 0;
 			}
 		}
@@ -138,6 +148,8 @@ uint8_t USART_getstr(char* str, uint8_t timeOut)
 			}else{
 				//USART_putstr(USART1, "Nog een gevonden!!\r\n");
 				if(i == strLen-1){
+					//USART_putstr(USART1, "HOOOI");
+					TIM_Cmd(TIM2, DISABLE);	//stop timer
 					return 1;
 				}
 			}
@@ -146,9 +158,6 @@ uint8_t USART_getstr(char* str, uint8_t timeOut)
 	
 	if(timeOut == 0){
 		return 0;
-	}else{
-		//USART_putstr(USART1, "ALLES KLAAAAR!\r\n");
-		return 1;
 	}
 	
 }

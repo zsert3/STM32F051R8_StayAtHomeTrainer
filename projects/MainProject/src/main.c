@@ -44,8 +44,8 @@ int main(){
 	STM_EVAL_LEDInit(LED3);
 	// Initialize User Button on STM32F0-Discovery
 	STM_EVAL_PBInit(BUTTON_USER, BUTTON_MODE_GPIO);
-
 	
+	initTimeoutTIM();
 	WIFI_init();
 	
 	I2C_Setup();
@@ -55,19 +55,19 @@ int main(){
     {
 			STM_EVAL_LEDOff(LED3);
 			
-			//USART_putstr(USART2, "begin\r\n");
-			//USART_putc(USART2, USART_getstr(USART2, "HOI", 3));
-			//sendATCommand();
+//			USART_putstr(USART2, "begin\r\n");
+//			USART_putc(USART2, USART_getstr("HOI"));
+			sendATCommand();
 			
-			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
-			EEPROM_setRevalidationData(128, dataSendRev);
-			
-			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
-			dataRecieveRev = EEPROM_getRevalidationData(128);
+//			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
+//			EEPROM_setRevalidationData(128, dataSendRev);
+//			
+//			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
+//			dataRecieveRev = EEPROM_getRevalidationData(128);
 
-			USART_putstr(USART1, "Data verzenden naar server\r\n");
-	
-			WIFI_HTTPPost2(dataRecieveRev);
+//			USART_putstr(USART1, "Data verzenden naar server\r\n");
+//	
+//			WIFI_HTTPPost2(dataRecieveRev);
 			
 			Delay(SystemCoreClock/8);
     }

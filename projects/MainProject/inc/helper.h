@@ -16,6 +16,9 @@ extern "C" {
 #endif
 
 #include "stm32f0xx.h"
+#include "stm32f0xx_rcc.h"
+#include "stm32f0xx_tim.h"
+#include "stm32f0_discovery.h"
 #include <stdlib.h>
 
 typedef struct
@@ -31,6 +34,7 @@ typedef struct
 void Delay(const int d);
 void Delay2(const int d);
 void addData(uint16_t *i, average *sumData, uint16_t currentRPM, uint16_t currentTorgue, uint16_t currentPower, uint16_t currentAngle, uint16_t currentSymmetry);
+void initTimeoutTIM(void);
 
 //average calcAverage(average currentAverage, currentData newData);
 /* Public variables --------------------------------------------------------*/

@@ -29,6 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
+#include "stm32f0xx_tim.h"
 #include "sendReceiveUART.h"
 #include "STM32F0_discovery.h"
 
@@ -37,7 +38,7 @@
 // ----------------------------------------------------------------------------
 extern volatile char* buffer;
 int head, tail = 0;
-extern volatile int ok, fail, sFail, returnCode, isSet;
+extern volatile int ok, fail, sFail, returnCode, isSet, timeOutIT;
 extern volatile char lastBuffer, bufferVal;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -155,6 +156,16 @@ void USART2_IRQHandler(void)
 //				 tail++;
 //		 }
 	}
+}
+
+void TIM2_IRQHandler(void)
+{
+	USART_putc(USART2, TIM_GetITStatus(TIM2, TIM_IT_Update));
+  if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+		timeOutIT = 1;
+  }
 }
 
 /******************************************************************************/
