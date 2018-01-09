@@ -18,21 +18,12 @@ extern "C" {
 #include "stm32f0xx.h"
 #include <stdlib.h>
 
-typedef struct
-{
-	uint64_t sumRPM ;
-	uint64_t sumTorgue;
-	uint64_t sumPower;
-	uint64_t sumAngle;
-	uint64_t sumSymmetry;
-}average;
+
 
 /* Public functions --------------------------------------------------------*/
 void Delay(const int d);
 void Delay2(const int d);
-void addData(uint16_t *i, average *sumData, uint16_t currentRPM, uint16_t currentTorgue, uint16_t currentPower, uint16_t currentAngle, uint16_t currentSymmetry);
 
-//average calcAverage(average currentAverage, currentData newData);
 /* Public variables --------------------------------------------------------*/
 typedef struct 
 {
@@ -41,36 +32,75 @@ typedef struct
 	union { uint8_t value; uint8_t bytes[1]; }startDateDD;
 	union { uint8_t value; uint8_t bytes[1]; }startDateMM;
 	union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;
-}revalidationData;
-
-typedef struct
-{
-	uint16_t currentRPM;
-	uint16_t currentTorgue;
-	uint16_t currentPower;
-	uint16_t currentAngle;
-	uint16_t currentSymmetry;
-}currentData;
-
-typedef struct 
-{
-		union {	uint16_t value; uint8_t bytes[2]; }duration;
-		union { uint8_t value; uint8_t bytes[1]; }startDateDD;
-		union { uint8_t value; uint8_t bytes[1]; }startDateMM;
-		union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;
-		
-		union {	uint16_t value; uint8_t bytes[2]; }averageRPM;
-		union {	uint16_t value; uint8_t bytes[2]; }averageTorgue;
-		union {	uint16_t value; uint8_t bytes[2]; }averagePower;
-		union {	uint16_t value; uint8_t bytes[2]; }averageAngle;
-		union {	uint16_t value; uint8_t bytes[2]; }averageSymmetry;
-		union {	uint16_t value; uint8_t bytes[2]; }calories;
 }revalidationData2;
 
 typedef struct
 {
+	int16_t currentRPM;
+	int16_t currentTorque;
+	uint16_t currentPower;
+	uint16_t currentAngle;
+	uint8_t currentSymmetry;
+	int32_t remainingTime; //kan -1 zijn, wordt ingesteld dus mogelijk groter dan 16 int
+	uint16_t calories;
+	int16_t passiveRPM;
+	int16_t minPassiveRPM;
+	int16_t maxPassiveRPM;
+	int16_t driveTorque;
+	int16_t driveTorqueLimit;
+	int16_t minDriveTorque;
+	int16_t maxDriveTorque;
+	int16_t brakeTorque;
+	int16_t minBrakeTorque;
+	int16_t maxBrakeTorque;
+	char *trainType; //invalid, redDemand
+	char *trainer; //invalid, legtrainer
+	char *deviceMode; //invalid, start, stop, pause
+}currentData;
+
+typedef struct
+{
+	uint64_t sumRPM ;
+	uint64_t sumTorque;
+	uint64_t sumPower;
+	uint64_t sumAngle;
+	uint64_t sumSymmetry;
+	int64_t sumPassiveRPM;
+}average;
+
+
+typedef struct
+{
+	union {	uint16_t value; uint8_t bytes[2]; }duration;
+	union {	int16_t value; uint8_t bytes[2]; }averageRPM;
+	union {	int16_t value; uint8_t bytes[2]; }averageTorque;
+	union {	uint16_t value; uint8_t bytes[2]; }averagePower;
+	union {	uint16_t value; uint8_t bytes[2]; }averageAngle;
+	union {	uint16_t value; uint8_t bytes[2]; }averageSymmetry;
+	union {	uint16_t value; uint8_t bytes[2]; }calories;
+	union {	int16_t value; uint8_t bytes[2]; }averagePassiveRPM;
+	union {	int16_t value; uint8_t bytes[2]; }minPassiveRPM;
+	union {	int16_t value; uint8_t bytes[2]; }maxPassiveRPM;
+	union {	int16_t value; uint8_t bytes[2]; }averageDriveTorque;
+	union {	int16_t value; uint8_t bytes[2]; }averageDriveTorqueLimit;
+	union {	int16_t value; uint8_t bytes[2]; }minDriveTorque;
+	union {	int16_t value; uint8_t bytes[2]; }maxDriveTorque;
+	union {	int16_t value; uint8_t bytes[2]; }averageBrakeTorque;
+	union {	int16_t value; uint8_t bytes[2]; }minBrakeTorque;
+	union {	int16_t value; uint8_t bytes[2]; }maxBrakeTorque;
+	char trainType[10];
+	char trainer[10];
+	char deviceMode[10];
+}revalidationData;
+ 
+
+typedef struct
+{
 	union {	uint16_t value; uint8_t bytes[2]; }tailAdress;
-	union {	uint64_t value; uint8_t bytes[8]; }randomData;
+	char IPAdress[20];
+	char SSID[15];
+	char pass[11]; 
+	char lampMAC[15];
 }initPage;
 
 

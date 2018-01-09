@@ -36,8 +36,8 @@ void Delay2(const int d)
   return;
 }
 
-void addData(uint16_t *i, average *sumData, uint16_t currentRPM, uint16_t currentTorgue, uint16_t currentPower, uint16_t currentAngle, uint16_t currentSymmetry)
-{
-	
-}
+//void addData(uint16_t *i, average *sumData, uint16_t currentRPM, uint16_t currentTorgue, uint16_t currentPower, uint16_t currentAngle, uint16_t currentSymmetry)
+//{
+//	
+//}
 

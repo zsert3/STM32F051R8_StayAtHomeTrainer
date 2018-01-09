@@ -16,7 +16,7 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
 #include "wifiComm.h"
 
 /* Private function prototypes -----------------------------------------------*/
-
+void delay(const int d);
 
 /**
   * @brief  This function will reset the Wifi module
@@ -117,29 +117,20 @@ void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uin
 	
 	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
 	USART_putstr(USART2, bufCommand);
-	Delay(SystemCoreClock/(8));
+	delay(SystemCoreClock/(8));
 	USART_putstr(USART2, bufMessage);
 }
 
 
 void WIFI_HTTPPost2(revalidationData data)
 {
-	char *contentLength;
-	char *bufMessage;
-	char *bufCommand;
-	char *sendString;
-	
-	//create safespace for arrays
-	contentLength = malloc(30 * sizeof(char));
-	sendString = 		malloc(100 * sizeof(char));
-	bufMessage = 		malloc(300 * sizeof(char));
-	bufCommand = 		malloc(20 * sizeof(char));
-	
-	
-	sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d:%d:%d&fTijd=%d&intensiteit=%d\r\n",3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD.value,15, 23, 00, data.duration.value, data.intensity.value);
+	char contentLength[128];
+	char bufMessage[512];
+	char bufCommand[20];
+	char *sendString = malloc(512 * sizeof(uint8_t));
+	//sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d-%d-%d&fTijd=%d&intensiteit=%d\r\n", 3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD, 15, 23, 00);
 
-	USART_putstr(USART1, sendString);
-	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
+	//sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
 	
 	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
 	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
@@ -151,14 +142,8 @@ void WIFI_HTTPPost2(revalidationData data)
 	
 	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
 	USART_putstr(USART2, bufCommand);
-	Delay(SystemCoreClock/(8));
+	delay(SystemCoreClock/(8));
 	USART_putstr(USART2, bufMessage);
-	
-	//free all mallocs
-	free(contentLength);
-	free(sendString);
-	free(bufMessage);
-	free(bufCommand);
 }
 
 
@@ -214,5 +199,12 @@ void WIFI_init(void){
 	STM_EVAL_LEDOn(LED3);
 }
 
+void delay(const int d)
+{
+  volatile int i;
 
+  for(i=d; i>0; i--){ ; }
+
+  return;
+}
 
