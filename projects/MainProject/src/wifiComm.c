@@ -16,7 +16,7 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
 #include "wifiComm.h"
 
 /* Private function prototypes -----------------------------------------------*/
-
+void delay(const int d);
 
 /**
   * @brief  This function will reset the Wifi module
@@ -104,8 +104,10 @@ void WIFI_connectServer(void){
 	* @retval None
   */
 
+
 void WIFI_HTTPPost(revalidationData data)
 {
+
 	char *contentLength;
 	char *bufMessage;
 	char *bufCommand;
@@ -138,14 +140,8 @@ void WIFI_HTTPPost(revalidationData data)
 	
 	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
 	USART_putstr(USART2, bufCommand);
-	Delay(SystemCoreClock/(8));
+	delay(SystemCoreClock/(8));
 	USART_putstr(USART2, bufMessage);
-	
-	//free all mallocs
-	free(contentLength);
-	free(sendString);
-	free(bufMessage);
-	free(bufCommand);
 }
 
 
@@ -201,5 +197,12 @@ void WIFI_init(void){
 	STM_EVAL_LEDOn(LED3);
 }
 
+void delay(const int d)
+{
+  volatile int i;
 
+  for(i=d; i>0; i--){ ; }
+
+  return;
+}
 

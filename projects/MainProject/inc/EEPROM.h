@@ -19,6 +19,7 @@ extern "C" {
 #include "helper.h"
 #include <stdlib.h>
 #include <stdio.h>
+	#include "string.h"
 	
 //device 7-bits address assuming A0=A1=A2=0
 #define EEPROM_ADDR               0xA0
@@ -34,10 +35,8 @@ extern "C" {
 #define EEPROM_COMM_ERROR         (0x1)
 	
 /* Public functions --------------------------------------------------------*/
-void    					I2C_Setup(void);
-void    					EEPROM_Clear(void);
-void 							EEPROM_ReadPage(uint16_t addr, uint8_t *data);
-void 							EEPROM_WritePage(uint16_t addr, uint8_t* data_ptr);
+void    					I2C_Setup( void );
+void    					SE24LC512_Clear(void);
 initPage 					EEPROM_getInitPage(void); 
 void 							EEPROM_setInitPage(initPage page);
 void 							EEPROM_setRevalidationData(uint16_t addr, revalidationData data);

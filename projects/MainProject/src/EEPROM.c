@@ -16,11 +16,12 @@ uint32_t EEPROM_CommStatus = EEPROM_COMM_OK;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define PAGE_LENGTH 126
-#define EEPROM_MAXADRESSES ((uint16_t)(500))
+#define EEPROM_MAXADRESSES				((uint16_t)(500))
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
-
+void SE24LC512_ReadPage(uint16_t addr, uint8_t *data);
+void SE24LC512_WritePage(uint16_t addr, uint8_t* data_ptr);
 void SE_WaitForI2CFlag(uint32_t flag);
 /* Private functions ---------------------------------------------------------*/
 
@@ -115,7 +116,7 @@ void I2C_Setup(void)
   * @param  data: pointer to the adress(array) the data should be written to.
   * @retval None
   */
-void EEPROM_ReadPage(uint16_t addr, uint8_t *data)
+void SE24LC512_ReadPage(uint16_t addr, uint8_t *data)
 {
 	
 	uint8_t i = 0;
@@ -154,12 +155,12 @@ void EEPROM_ReadPage(uint16_t addr, uint8_t *data)
 /**
   * @brief  This function writes up to 127 bytes data to the serial eeprom. 
   * @param  addr: 16-bit address of eeprom where data is written. 
-						data_ptr: 8-bit pointer to data to be written.
-						length: 8 bit length of the page (optional). 
-						lenght: number of bytes to be written (must be <= 127. 
+  * @param  data_ptr: 8-bit pointer to data to be written.
+	* @param  length: 8 bit length of the page (optional). 
+  * @param  lenght: number of bytes to be written (must be <= 127. 
   * @retval None
   */
-void EEPROM_WritePage(uint16_t addr, uint8_t *data_ptr)
+void SE24LC512_WritePage(uint16_t addr, uint8_t *data_ptr)
 {
 		uint8_t i; 
 
@@ -187,7 +188,7 @@ void EEPROM_WritePage(uint16_t addr, uint8_t *data_ptr)
 		I2C_ClearFlag(I2C1, I2C_ICR_STOPCF);	
 		
 		//5-10ms delay
-		Delay(SystemCoreClock/8/10);
+		Delay((SystemCoreClock/8/1000) * 10); //60 000
 }
 
 
@@ -234,7 +235,7 @@ void SE_WaitForI2CFlag(uint32_t flag)
   * @param  None
   * @retval None
   */
-void EEPROM_Clear(void)
+void SE24LC512_Clear(void)
 {
 		//uint8_t data[126] = {0xFF};
 		uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t)); 
@@ -248,13 +249,18 @@ void EEPROM_Clear(void)
 		
 	  for(i = 0; i < EEPROM_MAXADRESSES - 1; i++) 
 		{
-			EEPROM_WritePage(addr * 128, data);
+			SE24LC512_WritePage(addr * 128, data);
 		}	
 		
 		free(data);
 }
 
 
+/**
+  * @brief  saves the initialisation page to the eeprom. 
+	* @param  page: this struct contains the initialisation data
+  * @retval None
+  */
 void EEPROM_setInitPage(initPage page)
 {
 	uint8_t *total = malloc(PAGE_LENGTH * sizeof(uint8_t));
@@ -264,56 +270,127 @@ void EEPROM_setInitPage(initPage page)
 	memcpy(total + totalSize, page.tailAdress.bytes, totalSize + sizeof(page.tailAdress));
 	totalSize += sizeof(page.tailAdress);
 	
-	//set random data
-	memcpy(total + totalSize, page.randomData.bytes, totalSize + sizeof(page.randomData));
+	memcpy(total + totalSize, page.IPAdress, totalSize + 20);
+	totalSize += 20;
+	
+	memcpy(total + totalSize, page.SSID, totalSize + 15);
+	totalSize += 15;
+	
+	memcpy(total + totalSize, page.pass, totalSize + 11);
+	totalSize += 11;
+	
+	memcpy(total + totalSize, page.lampMAC, totalSize + 15);
 	
 	//write init page to start adress
-	EEPROM_WritePage(0, total);
+	SE24LC512_WritePage(0, total);
 	free(total);
 }
 
 
+/**
+  * @brief  this function returns the initialisation page from the eeprom. 
+  * @param  None
+* @retval initPage page: initialisation page data
+  */
 initPage EEPROM_getInitPage()
 {
 	initPage page;
 	uint8_t totalSize = 0;
 	uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t)); 
 	
-	EEPROM_ReadPage(0, data);
+	SE24LC512_ReadPage(0, data);
 	
 	//set tail adress
 	memcpy(page.tailAdress.bytes, data + totalSize, sizeof(page.tailAdress));
 	totalSize += sizeof(page.tailAdress);
 	
-	//set random data
-	memcpy(page.randomData.bytes, data + totalSize, sizeof(page.randomData));
+	memcpy(page.IPAdress, data + totalSize, 20);
+	totalSize += 20;
+	
+	memcpy(page.SSID, data + totalSize, 15);
+	totalSize += 15;
+	
+	memcpy(page.pass, data + totalSize, 11);
+	totalSize += 11;
+	
+	memcpy(page.lampMAC, data + totalSize, 15);
 	
 	free(data);
 	return page;
 }
 
-
+/**
+  * @brief  This function returns the revalidation data struct from the eeprom. 
+  * @param  None
+* @retval revalidationData revData: struct that contains the revalidation data
+  */
 revalidationData EEPROM_getRevalidationData(uint16_t addr)
 {
 	revalidationData revData;
 	uint8_t totalSize = 0;
 	uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t));
 	
-	EEPROM_ReadPage(addr, data);
+	SE24LC512_ReadPage(addr, data);
 	
 	memcpy(revData.duration.bytes, data + totalSize, sizeof(revData.duration));
 	totalSize += sizeof(revData.duration);
 	
-	memcpy(revData.intensity.bytes, data + totalSize, sizeof(revData.intensity));
-	totalSize += sizeof(revData.intensity);
+	memcpy(revData.averageRPM.bytes, data + totalSize, sizeof(revData.averageRPM));
+	totalSize += sizeof(revData.averageRPM);
 	
-	memcpy(revData.startDateDD.bytes, data + totalSize, sizeof(revData.startDateDD));
-	totalSize += sizeof(revData.startDateDD);
+	memcpy(revData.averageTorque.bytes, data + totalSize, sizeof(revData.averageTorque));
+	totalSize += sizeof(revData.averageTorque);
 	
-	memcpy(revData.startDateMM.bytes, data + totalSize, sizeof(revData.startDateMM));
-	totalSize += sizeof(revData.startDateMM);
+	memcpy(revData.averagePower.bytes, data + totalSize, sizeof(revData.averagePower));
+	totalSize += sizeof(revData.averagePower);
 	
-	memcpy(revData.startDateYYYY.bytes, data + totalSize, sizeof(revData.startDateYYYY));
+	memcpy(revData.averageAngle.bytes, data + totalSize, sizeof(revData.averageAngle));
+	totalSize += sizeof(revData.averageAngle);
+	
+	memcpy(revData.averageSymmetry.bytes, data + totalSize, sizeof(revData.averageSymmetry));
+	totalSize += sizeof(revData.averageSymmetry);
+	
+	memcpy(revData.calories.bytes, data + totalSize, sizeof(revData.calories));
+	totalSize += sizeof(revData.calories);
+	
+	memcpy(revData.averagePassiveRPM.bytes, data + totalSize, sizeof(revData.averagePassiveRPM));
+	totalSize += sizeof(revData.averagePassiveRPM);
+	
+	memcpy(revData.minPassiveRPM.bytes, data + totalSize, sizeof(revData.minPassiveRPM));
+	totalSize += sizeof(revData.minPassiveRPM);
+	
+	memcpy(revData.maxPassiveRPM.bytes, data + totalSize, sizeof(revData.maxPassiveRPM));
+	totalSize += sizeof(revData.maxPassiveRPM);
+	
+	memcpy(revData.averageDriveTorque.bytes, data + totalSize, sizeof(revData.averageDriveTorque));
+	totalSize += sizeof(revData.averageDriveTorque);
+	
+	memcpy(revData.averageDriveTorqueLimit.bytes, data + totalSize, sizeof(revData.averageDriveTorqueLimit));
+	totalSize += sizeof(revData.averageDriveTorqueLimit);
+	
+	memcpy(revData.minDriveTorque.bytes, data + totalSize, sizeof(revData.minDriveTorque));
+	totalSize += sizeof(revData.minDriveTorque);
+	
+	memcpy(revData.maxDriveTorque.bytes, data + totalSize, sizeof(revData.maxDriveTorque));
+	totalSize += sizeof(revData.maxDriveTorque);
+	
+	memcpy(revData.averageBrakeTorque.bytes, data + totalSize, sizeof(revData.averageBrakeTorque));
+	totalSize += sizeof(revData.averageBrakeTorque);
+	
+	memcpy(revData.minBrakeTorque.bytes, data + totalSize, sizeof(revData.minBrakeTorque));
+	totalSize += sizeof(revData.minBrakeTorque);
+	
+	memcpy(revData.maxBrakeTorque.bytes, data + totalSize, sizeof(revData.maxBrakeTorque));
+	totalSize += sizeof(revData.maxBrakeTorque);
+	
+	//3 strings
+	memcpy(revData.trainType, data + totalSize, 10);
+	totalSize += 10;
+	
+	memcpy(revData.trainer, data + totalSize, 10);
+	totalSize += 10;
+	
+	memcpy(revData.deviceMode, data + totalSize, 10);
 	
 	free(data);
 	
@@ -321,6 +398,12 @@ revalidationData EEPROM_getRevalidationData(uint16_t addr)
 }
 
 
+/**
+  * @brief  This function saves revalidationdata to the eeprom. 
+* @param  uint_16t addr: the adress the data is writtten to (addr >= 1)
+*@param 	revalidationData data: 
+  * @retval None
+  */
 void EEPROM_setRevalidationData(uint16_t addr, revalidationData data)
 {	
 	uint8_t *total = malloc(PAGE_LENGTH * sizeof(uint8_t));
@@ -329,18 +412,64 @@ void EEPROM_setRevalidationData(uint16_t addr, revalidationData data)
 	memcpy(total + totalSize, data.duration.bytes, totalSize + sizeof(data.duration));
 	totalSize += sizeof(data.duration);
 	
-	memcpy(total + totalSize, data.intensity.bytes, totalSize + sizeof(data.intensity));
-	totalSize += sizeof(data.intensity);
+	memcpy(total + totalSize, data.averageRPM.bytes, totalSize + sizeof(data.averageRPM));
+	totalSize += sizeof(data.averageRPM);
 	
-	memcpy(total + totalSize, data.startDateDD.bytes, totalSize + sizeof(data.startDateDD));
-	totalSize += sizeof(data.startDateDD);
+	memcpy(total + totalSize, data.averageTorque.bytes, totalSize + sizeof(data.averageTorque));
+	totalSize += sizeof(data.averageTorque);
 	
-	memcpy(total + totalSize, data.startDateMM.bytes, totalSize + sizeof(data.startDateMM));
-	totalSize += sizeof(data.startDateMM);
+	memcpy(total + totalSize, data.averagePower.bytes, totalSize + sizeof(data.averagePower));
+	totalSize += sizeof(data.averagePower);
 	
-	memcpy(total + totalSize, data.startDateYYYY.bytes, totalSize + sizeof(data.startDateYYYY));
+	memcpy(total + totalSize, data.averageAngle.bytes, totalSize + sizeof(data.averageAngle));
+	totalSize += sizeof(data.averageAngle);
 	
-	EEPROM_WritePage(addr, total);
+	memcpy(total + totalSize, data.averageSymmetry.bytes, totalSize + sizeof(data.averageSymmetry));
+	totalSize += sizeof(data.averageSymmetry);
+	
+	memcpy(total + totalSize, data.calories.bytes, totalSize + sizeof(data.calories));
+	totalSize += sizeof(data.calories);
+	
+	memcpy(total + totalSize, data.averagePassiveRPM.bytes, totalSize + sizeof(data.averagePassiveRPM));
+	totalSize += sizeof(data.averagePassiveRPM);
+	
+	memcpy(total + totalSize, data.minPassiveRPM.bytes, totalSize + sizeof(data.minPassiveRPM));
+	totalSize += sizeof(data.minPassiveRPM);
+	
+	memcpy(total + totalSize, data.maxPassiveRPM.bytes, totalSize + sizeof(data.maxPassiveRPM));
+	totalSize += sizeof(data.maxPassiveRPM);
+	
+	memcpy(total + totalSize, data.averageDriveTorque.bytes, totalSize + sizeof(data.averageDriveTorque));
+	totalSize += sizeof(data.averageDriveTorque);
+	
+	memcpy(total + totalSize, data.averageDriveTorqueLimit.bytes, totalSize + sizeof(data.averageDriveTorqueLimit));
+	totalSize += sizeof(data.averageDriveTorqueLimit);
+	 
+	memcpy(total + totalSize, data.minDriveTorque.bytes, totalSize + sizeof(data.minDriveTorque));
+	totalSize += sizeof(data.minDriveTorque);
+	
+	memcpy(total + totalSize, data.maxDriveTorque.bytes, totalSize + sizeof(data.maxDriveTorque));
+	totalSize += sizeof(data.maxDriveTorque);
+	
+	memcpy(total + totalSize, data.averageBrakeTorque .bytes, totalSize + sizeof(data.averageBrakeTorque ));
+	totalSize += sizeof(data.averageBrakeTorque );
+	
+	memcpy(total + totalSize, data.minBrakeTorque .bytes, totalSize + sizeof(data.minBrakeTorque ));
+	totalSize += sizeof(data.minBrakeTorque );
+	
+	memcpy(total + totalSize, data.maxBrakeTorque.bytes, totalSize + sizeof(data.maxBrakeTorque));
+	totalSize += sizeof(data.maxBrakeTorque);
+	
+	//3 strings
+	memcpy(total + totalSize, data.trainType, totalSize + 10);
+	totalSize += 10;
+	
+	memcpy(total + totalSize, data.trainer, totalSize + 10);
+	totalSize += 10;
+	
+	memcpy(total + totalSize, data.deviceMode, totalSize + 10);
+	
+	SE24LC512_WritePage(addr, total);
 	free(total);
 }
 

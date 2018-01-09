@@ -1,7 +1,7 @@
 /**
 ******************************************************************************
 * @file    	main.c
-* @author 	Rick Winters, Bastiaan Metz
+* @author 	Rick Winters
 * @version	V0.0.1
 * @date   	06-12-2017
 * @brief  	This is the main file of the project
@@ -17,7 +17,6 @@
 #include "stm32f0_discovery.h"
 #include "helper.h"
 #include "EEPROM.h"
-
 #include <String.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,6 +26,7 @@ extern volatile int head, tail;
 
 
 int main(){	
+
 	char buf[100];
 	revalidationData dataSendRev;
 	revalidationData dataRecieveRev;
@@ -39,6 +39,7 @@ int main(){
 	dataSendRev.startDateMM.value = 12;
 	dataSendRev.startDateYYYY.value = 1996;
 	
+
 	
 	USART_init();
 	STM_EVAL_LEDInit(LED3);
@@ -53,6 +54,7 @@ int main(){
 
 		if (STM_EVAL_PBGetState(BUTTON_USER) && EEPROM_CommStatus == EEPROM_COMM_OK)
     {
+
 			STM_EVAL_LEDOff(LED3);
 			
 //			USART_putstr(USART2, "begin\r\n");
@@ -70,6 +72,7 @@ int main(){
 //			WIFI_HTTPPost2(dataRecieveRev);
 			
 			Delay(SystemCoreClock/8);
+
     }
     else
     {
