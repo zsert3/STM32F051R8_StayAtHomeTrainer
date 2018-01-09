@@ -103,31 +103,8 @@ void WIFI_connectServer(void){
 						uint16_t intensiteit
 	* @retval None
   */
-void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uint16_t fietsTijd, uint16_t intensiteit){
-	char contentLength[128];
-	char sendString[512];
-	char bufMessage[512];
-	char bufCommand[20];
-	
-	sprintf(sendString, "idT=0&idRT=%d&startTijd=%s %s&fTijd=%d&intensiteit=%d\r\n", idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
-	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
-	
-	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
-	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
-	strcat(bufMessage,"Content-Type:application/x-www-form-urlencoded\r\n");
-	strcat(bufMessage,"Cache-Control:no-cache\r\n");
-	strcat(bufMessage, contentLength);
-	strcat(bufMessage,"\r\n");
-	strcat(bufMessage, sendString);
-	
-	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
-	USART_putstr(USART2, bufCommand);
-	Delay(SystemCoreClock/(8));
-	USART_putstr(USART2, bufMessage);
-}
 
-
-void WIFI_HTTPPost2(revalidationData data)
+void WIFI_HTTPPost(revalidationData data)
 {
 	char *contentLength;
 	char *bufMessage;
@@ -136,13 +113,18 @@ void WIFI_HTTPPost2(revalidationData data)
 	
 	//create safespace for arrays
 	contentLength = malloc(30 * sizeof(char));
-	sendString = 		malloc(100 * sizeof(char));
-	bufMessage = 		malloc(300 * sizeof(char));
+	sendString = 		malloc(510 * sizeof(char));
+	bufMessage = 		malloc(700 * sizeof(char));
 	bufCommand = 		malloc(20 * sizeof(char));
 	
 	
-	sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d:%d:%d&fTijd=%d&intensiteit=%d\r\n",3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD.value,15, 23, 00, data.duration.value, data.intensity.value);
-
+	sprintf(sendString, "idRT=%d&duration=%d&averageRPM=%d&averageTorque=%d&averagePower=%d&averageAngle=%d&averageSymmetry=%d&calories=%d&averagePassiveRPM=%d&minPassiveRPM=%d&maxPassiveRPM=%d&averageDriveTorque=%d&averageDriveTorqueLimit=%d&minDriveTorque=%d&maxDriveTorque=%d&averageBrakeTorque=%d&minBrakeTorque=%d&maxBrakeTorque=%d&trainType=%s&strainer=%s&deviceMode=%s\r\n",
+					3,data.duration.value, data.averageRPM.value, data.averageTorque.value, data.averagePower.value,
+					data.averageAngle.value, data.averageSymmetry.value, data.calories.value, data.averagePassiveRPM.value,
+					data.minPassiveRPM.value, data.maxPassiveRPM.value, data.averageDriveTorque.value, data.averageDriveTorqueLimit.value,
+					data.minDriveTorque.value, data.maxDriveTorque.value, data.averageBrakeTorque.value, data.minBrakeTorque.value,
+					data.maxBrakeTorque.value, data.trainType, data.trainer, data.deviceMode);
+	
 	USART_putstr(USART1, sendString);
 	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
 	

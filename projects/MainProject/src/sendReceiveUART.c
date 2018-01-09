@@ -98,7 +98,6 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
   * @brief  This function waits untill str1 is received through USART2
 						for instance 'OK' when a message is send correctly
 	* @param 	str: this is the string the function will search for
-						timeOut: how many times can the function try before it quits	!!can probably be hardcoded!!
 	* @retval 0: Error state
 						1: String found]
   */
@@ -118,13 +117,6 @@ uint8_t USART_getstr(char* str)
 	while(timeOut > 0){
 		
 		while(bufferVal != *str){	//waiting for first bit of str !!TIMER INTERRUPT!!
-//			getstrTimeout++;
-//			sprintf(buf, "%d", getstrTimeout);
-//			//USART_putstr(USART1,buf);
-//			if(getstrTimeout == TIMEOUT){	//if timeout is reached, return 0
-//				USART_putstr(USART1, "TIMEOUT\r\n");
-//				return 0;
-//			}
 			if(timeOutIT == 1){
 				USART_putstr(USART1, "TIMEOUT\r\n");
 				timeOut = 0;
@@ -141,7 +133,6 @@ uint8_t USART_getstr(char* str)
 			
 			if(bufferVal != *str){
 				//USART_putstr(USART1, "ALLES IS KAPOT!!\r\n");
-				
 				str -= i;
 				timeOut--;
 				break;
@@ -155,7 +146,6 @@ uint8_t USART_getstr(char* str)
 			}
 		}
 	}
-	
 	if(timeOut == 0){
 		return 0;
 	}

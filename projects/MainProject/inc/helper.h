@@ -38,14 +38,30 @@ void initTimeoutTIM(void);
 
 //average calcAverage(average currentAverage, currentData newData);
 /* Public variables --------------------------------------------------------*/
-typedef struct 
+typedef struct
 {
-	union {	uint16_t value; uint8_t bytes[2]; }duration;
-	union { int32_t value; uint8_t bytes[4]; }intensity;
-	union { uint8_t value; uint8_t bytes[1]; }startDateDD;
-	union { uint8_t value; uint8_t bytes[1]; }startDateMM;
-	union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;
+    union {    uint16_t value; uint8_t bytes[2]; }duration;
+    union {    int16_t value; uint8_t bytes[2]; }averageRPM;
+    union {    int16_t value; uint8_t bytes[2]; }averageTorque;
+    union {    uint16_t value; uint8_t bytes[2]; }averagePower;
+    union {    uint16_t value; uint8_t bytes[2]; }averageAngle;
+    union {    uint16_t value; uint8_t bytes[2]; }averageSymmetry;
+    union {    uint16_t value; uint8_t bytes[2]; }calories;
+    union {    int16_t value; uint8_t bytes[2]; }averagePassiveRPM;
+    union {    int16_t value; uint8_t bytes[2]; }minPassiveRPM;
+    union {    int16_t value; uint8_t bytes[2]; }maxPassiveRPM;
+    union {    int16_t value; uint8_t bytes[2]; }averageDriveTorque;
+    union {    int16_t value; uint8_t bytes[2]; }averageDriveTorqueLimit;
+    union {    int16_t value; uint8_t bytes[2]; }minDriveTorque;
+    union {    int16_t value; uint8_t bytes[2]; }maxDriveTorque;
+    union {    int16_t value; uint8_t bytes[2]; }averageBrakeTorque;
+    union {    int16_t value; uint8_t bytes[2]; }minBrakeTorque;
+    union {    int16_t value; uint8_t bytes[2]; }maxBrakeTorque;
+    char trainType[10];
+    char trainer[10];
+    char deviceMode[10];
 }revalidationData;
+
 
 typedef struct
 {
