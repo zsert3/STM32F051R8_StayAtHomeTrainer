@@ -1,7 +1,7 @@
 /**
 ******************************************************************************
 * @file    	main.c
-* @author 	Rick Winters, Bastiaan Metz
+* @author 	Rick Winters
 * @version	V0.0.1
 * @date   	06-12-2017
 * @brief  	This is the main file of the project
@@ -17,7 +17,6 @@
 #include "stm32f0_discovery.h"
 #include "helper.h"
 #include "EEPROM.h"
-
 #include <String.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -28,19 +27,19 @@ extern volatile int head, tail;
 
 
 int main(){	
-
-	revalidationData dataSendRev;
-	revalidationData dataRecieveRev;
-	//buffer = malloc(101 * sizeof(*buffer));
+	uint8_t idRevaladitie = 3;
+	char startDatum[128] = "2017-02-6";
+	char startTijd[128] = "12-23-00";
+	uint16_t fietsTijd = 32450;
+	uint16_t intensiteit = 900;
+	uint16_t addr = 0;
+	//revalidationData dataSendRev;
+	//revalidationData dataRecieveRev;
+	buffer = malloc(101 * sizeof(*buffer));
 	head = 0;
 	tail = 0;
 	
-	dataSendRev.duration.value = 600;
-	dataSendRev.intensity.value = 20;
-	dataSendRev.startDateDD.value = 3;
-	dataSendRev.startDateMM.value = 12;
-	dataSendRev.startDateYYYY.value = 1996;
-	
+
 	
 	USART_init();
 	STM_EVAL_LEDInit(LED3);
@@ -57,19 +56,21 @@ int main(){
 		if (STM_EVAL_PBGetState(BUTTON_USER) && EEPROM_CommStatus == EEPROM_COMM_OK)
     {
 			
-			STM_EVAL_LEDOff(LED3);
-			Delay(SystemCoreClock/8);
-
-			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
-			EEPROM_setRevalidationData(128, dataSendRev);
-
+			//STM_EVAL_LEDOff(LED3);
+			//Delay(SystemCoreClock/8);
+			//dataSendRev.startDateYYYY.value = 1999;
+			//dataSendRev.startDateMM.value = 10;
+			//dataSendRev.startDateDD.value = 30;
+			//dataSendRev.duration.value = 211;
+			//dataSendRev.intensity.value = 666;
 			
-			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
-			dataRecieveRev = EEPROM_getRevalidationData(128);
-
-			USART_putstr(USART1, "Data verzenden naar server\r\n");
-	
-			WIFI_HTTPPost2(dataRecieveRev);
+			
+			//EEPROM_setRevalidationData(128, dataRecieveRev);
+			
+			//dataRecieveRev = EEPROM_getRevalidationData(128);
+			
+			//WIFI_HTTPPost2(dataRecieveRev);
+			//WIFI_HTTPPost(idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
     }
     else
     {
