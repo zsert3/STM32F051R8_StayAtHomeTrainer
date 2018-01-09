@@ -16,6 +16,9 @@ extern "C" {
 #endif
 
 #include "stm32f0xx.h"
+#include "stm32f0xx_rcc.h"
+#include "stm32f0xx_tim.h"
+#include "stm32f0_discovery.h"
 #include <stdlib.h>
 
 
@@ -24,15 +27,18 @@ extern "C" {
 void Delay(const int d);
 void Delay2(const int d);
 
+void initTimeoutTIM(void);
+
+
 /* Public variables --------------------------------------------------------*/
-typedef struct 
-{
+
 	union {	uint16_t value; uint8_t bytes[2]; }duration;
 	union { uint32_t value; uint8_t bytes[4]; }intensity;
 	union { uint8_t value; uint8_t bytes[1]; }startDateDD;
 	union { uint8_t value; uint8_t bytes[1]; }startDateMM;
 	union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;
 }revalidationData2;
+
 
 typedef struct
 {

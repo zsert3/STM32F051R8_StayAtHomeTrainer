@@ -25,7 +25,7 @@ void delay(const int d);
   */
 void WIFI_reset(void){
 	USART_putstr(USART2, "AT+RST\r\n");
-	while(ok == 0);
+	USART_getstr("OK");
 }
 
 /**
@@ -36,7 +36,7 @@ void WIFI_reset(void){
   */
 void sendATCommand(void){
 	USART_putstr(USART2, "AT\r\n");
-	while(ok == 0);
+	USART_getstr("OK");
 }
 
 /**
@@ -50,12 +50,17 @@ void WIFI_connect(void){
 	USART_putstr(USART1, "Connecting to WIFI...\r\n");
 	USART_putstr(USART2, "AT+CWJAP=\"ESP8266\",\"123456789\"\r\n");
 	
-	while(ok == 0){
-		if(fail == 1){
-			USART_putstr(USART1, "Connect with WIFI Failed!!\r\n");
-			WIFI_connect();
-		}
+	if(USART_getstr("OK") == 1){
+	}else{
+		USART_putstr(USART1, "Connect with wifi Failed!!\r\n");
+		WIFI_connect();
 	}
+	
+//	while(ok == 0){
+//		if(fail == 1){
+//			
+//		}
+//	}
 }
 
 /**
@@ -65,7 +70,7 @@ void WIFI_connect(void){
   */
 void WIFI_checkIP(void){
 	USART_putstr(USART2, "AT+CIFSR\r\n");
-	while(ok == 0);
+	USART_getstr("OK");
 }
 
 /**
@@ -80,12 +85,12 @@ void WIFI_connectServer(void){
 	USART_putstr(USART2, "AT+CIPSTART=\"TCP\",\"160.153.129.214\",80\r\n");
 	//Server IP: 160.153.129.214
 	//Local IP: 145.44.97.217
-	while(ok == 0){
-		if(sFail == 1){
-			USART_putstr(USART1, "Connect with server Failed!!\r\n");
-			WIFI_connectServer();
-		}
+	if(USART_getstr("OK") == 1){
+	}else{
+		USART_putstr(USART1, "Connect with server Failed!!\r\n");
+		WIFI_connectServer();
 	}
+
 }
 
 /**
@@ -98,39 +103,32 @@ void WIFI_connectServer(void){
 						uint16_t intensiteit
 	* @retval None
   */
-void WIFI_HTTPPost(uint8_t idRevaladitie, char* startDatum, char* startTijd, uint16_t fietsTijd, uint16_t intensiteit){
-	char contentLength[128];
-	char sendString[512];
-	char bufMessage[512];
-	char bufCommand[20];
-	
-	sprintf(sendString, "idT=0&idRT=%d&startTijd=%s %s&fTijd=%d&intensiteit=%d\r\n", idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
-	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
-	
-	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
-	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
-	strcat(bufMessage,"Content-Type:application/x-www-form-urlencoded\r\n");
-	strcat(bufMessage,"Cache-Control:no-cache\r\n");
-	strcat(bufMessage, contentLength);
-	strcat(bufMessage,"\r\n");
-	strcat(bufMessage, sendString);
-	
-	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
-	USART_putstr(USART2, bufCommand);
-	delay(SystemCoreClock/(8));
-	USART_putstr(USART2, bufMessage);
-}
 
 
-void WIFI_HTTPPost2(revalidationData data)
+void WIFI_HTTPPost(revalidationData data)
 {
-	char contentLength[128];
-	char bufMessage[512];
-	char bufCommand[20];
-	char *sendString = malloc(512 * sizeof(uint8_t));
-	//sprintf(sendString, "idT=0&idRT=%d&startTijd=%d-%d-%d %d-%d-%d&fTijd=%d&intensiteit=%d\r\n", 3, data.startDateYYYY.value, data.startDateMM.value, data.startDateDD, 15, 23, 00);
 
-	//sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
+	char *contentLength;
+	char *bufMessage;
+	char *bufCommand;
+	char *sendString;
+	
+	//create safespace for arrays
+	contentLength = malloc(30 * sizeof(char));
+	sendString = 		malloc(510 * sizeof(char));
+	bufMessage = 		malloc(700 * sizeof(char));
+	bufCommand = 		malloc(20 * sizeof(char));
+	
+	
+	sprintf(sendString, "idRT=%d&duration=%d&averageRPM=%d&averageTorque=%d&averagePower=%d&averageAngle=%d&averageSymmetry=%d&calories=%d&averagePassiveRPM=%d&minPassiveRPM=%d&maxPassiveRPM=%d&averageDriveTorque=%d&averageDriveTorqueLimit=%d&minDriveTorque=%d&maxDriveTorque=%d&averageBrakeTorque=%d&minBrakeTorque=%d&maxBrakeTorque=%d&trainType=%s&strainer=%s&deviceMode=%s\r\n",
+					3,data.duration.value, data.averageRPM.value, data.averageTorque.value, data.averagePower.value,
+					data.averageAngle.value, data.averageSymmetry.value, data.calories.value, data.averagePassiveRPM.value,
+					data.minPassiveRPM.value, data.maxPassiveRPM.value, data.averageDriveTorque.value, data.averageDriveTorqueLimit.value,
+					data.minDriveTorque.value, data.maxDriveTorque.value, data.averageBrakeTorque.value, data.minBrakeTorque.value,
+					data.maxBrakeTorque.value, data.trainType, data.trainer, data.deviceMode);
+	
+	USART_putstr(USART1, sendString);
+	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
 	
 	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
 	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
@@ -158,16 +156,16 @@ void WIFI_HTTPPost2(revalidationData data)
 uint8_t WIFI_checkConnection(void){
 	USART_putstr(USART2, "AT+CIPSTATUS\r\n");
 	//CIPSTATUS returns the state after it sends STATUS:
-	
+
 	while(returnCode == 0);	//waiting for : after STATUS
 
-	if(returnCode == '3'){	//Wifi connected and serverr
+	if(returnCode == '3'){	//Wifi connected and server
 		USART_putstr(USART1, "Check connection = 1\r\n");
 		return 1;
-	}else if(returnCode == '5'){	//Wifi disconnected
+	}else if(returnCode == '5' || returnCode == '4'){	//Wifi disconnected
 		USART_putstr(USART1, "Check connection = 3\r\n");
 		return 3;
-	}else if(returnCode == '2' || bufferVal == '4'){	//Wifi connected, Server disconnected
+	}else if(returnCode == '2'){	//Wifi connected, Server disconnected
 		USART_putstr(USART1, "Check connection = 2\r\n");
 		return 2;
 	}else{

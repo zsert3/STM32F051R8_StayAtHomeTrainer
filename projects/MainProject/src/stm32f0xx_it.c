@@ -29,15 +29,17 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
+#include "stm32f0xx_tim.h"
 #include "sendReceiveUART.h"
 #include "STM32F0_discovery.h"
 
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
-char buffer[100];
+extern volatile char* buffer;
 int head, tail = 0;
-extern volatile int ok, fail, sFail,lastBuffer, bufferVal, returnCode;
+extern volatile int ok, fail, sFail, returnCode, isSet, timeOutIT;
+extern volatile char lastBuffer, bufferVal;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -113,25 +115,26 @@ void USART2_IRQHandler(void)
 	if(USART2->ISR & USART_ISR_RXNE)
 	{
 		 // Read the data, clears the interrupt flag
-		 bufferVal = USART2->RDR;
+		bufferVal = USART2->RDR;
 		
 		USART_putc(USART1, bufferVal);
+		isSet = 1;		//reset when used
 		//USART1->RDR = bufferVal;
-		 if(lastBuffer == 'O' && bufferVal == 'K'){
-			 ok = 1;
-		 }else{
-			 ok = 0;
-		 }
-		 if(lastBuffer == 'I' && bufferVal == 'L'){
-			 fail = 1;
-		 }else{
-			 fail = 0;
-		 }
-		 if(lastBuffer == 'O' && bufferVal == 'R'){
-			 sFail = 1;
-		 }else{
-			 sFail = 0;
-		 }
+//		 if(lastBuffer == 'O' && bufferVal == 'K'){
+//			 ok = 1;
+//		 }else{
+//			 ok = 0;
+//		 }
+//		 if(lastBuffer == 'I' && bufferVal == 'L'){
+//			 fail = 1;
+//		 }else{
+//			 fail = 0;
+//		 }
+//		 if(lastBuffer == 'O' && bufferVal == 'R'){
+//			 sFail = 1;
+//		 }else{
+//			 sFail = 0;
+//		 }
 		 if(lastBuffer == ':'){
 			 returnCode = bufferVal;
 		 }else{
@@ -141,18 +144,28 @@ void USART2_IRQHandler(void)
 		 
 		 lastBuffer = bufferVal;
 		 //check if the position is free and prevent overwriting head position (head position always has a value != 0)
-			if(buffer[tail] == 0)
-			{
-			 //add input character to buffer
-			 buffer[tail] = bufferVal;	
-			 
-			 //increase tail posiiton
-			 if(tail == 99)
-				 tail = 0;
-			 else
-				 tail++;
-		 }
+//			if(buffer[tail] == 0)
+//			{
+//			 //add input character to buffer
+//			 buffer[tail] = bufferVal;	
+//			 
+//			 //increase tail posiiton
+//			 if(tail == 99)
+//				 tail = 0;
+//			 else
+//				 tail++;
+//		 }
 	}
+}
+
+void TIM2_IRQHandler(void)
+{
+	USART_putc(USART2, TIM_GetITStatus(TIM2, TIM_IT_Update));
+  if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
+  {
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+		timeOutIT = 1;
+  }
 }
 
 /******************************************************************************/

@@ -22,22 +22,22 @@
 #include <stdio.h>
 
 extern uint32_t EEPROM_CommStatus;
-extern volatile char *buffer;
 extern volatile int head, tail;
 
 
 int main(){	
-	uint8_t idRevaladitie = 3;
-	char startDatum[128] = "2017-02-6";
-	char startTijd[128] = "12-23-00";
-	uint16_t fietsTijd = 32450;
-	uint16_t intensiteit = 900;
-	uint16_t addr = 0;
-	//revalidationData dataSendRev;
-	//revalidationData dataRecieveRev;
-	buffer = malloc(101 * sizeof(*buffer));
+
+	char buf[100];
+	revalidationData dataSendRev;
+	revalidationData dataRecieveRev;
 	head = 0;
 	tail = 0;
+	
+	dataSendRev.duration.value = 600;
+	dataSendRev.intensity.value = -20;
+	dataSendRev.startDateDD.value = 3;
+	dataSendRev.startDateMM.value = 12;
+	dataSendRev.startDateYYYY.value = 1996;
 	
 
 	
@@ -45,32 +45,34 @@ int main(){
 	STM_EVAL_LEDInit(LED3);
 	// Initialize User Button on STM32F0-Discovery
 	STM_EVAL_PBInit(BUTTON_USER, BUTTON_MODE_GPIO);
-
 	
+	initTimeoutTIM();
 	WIFI_init();
 	
 	I2C_Setup();
-	
 	while(1){
 
 		if (STM_EVAL_PBGetState(BUTTON_USER) && EEPROM_CommStatus == EEPROM_COMM_OK)
     {
+
+			STM_EVAL_LEDOff(LED3);
 			
-			//STM_EVAL_LEDOff(LED3);
-			//Delay(SystemCoreClock/8);
-			//dataSendRev.startDateYYYY.value = 1999;
-			//dataSendRev.startDateMM.value = 10;
-			//dataSendRev.startDateDD.value = 30;
-			//dataSendRev.duration.value = 211;
-			//dataSendRev.intensity.value = 666;
+//			USART_putstr(USART2, "begin\r\n");
+//			USART_putc(USART2, USART_getstr("HOI"));
+			sendATCommand();
 			
+//			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
+//			EEPROM_setRevalidationData(128, dataSendRev);
+//			
+//			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
+//			dataRecieveRev = EEPROM_getRevalidationData(128);
+
+//			USART_putstr(USART1, "Data verzenden naar server\r\n");
+//	
+//			WIFI_HTTPPost2(dataRecieveRev);
 			
-			//EEPROM_setRevalidationData(128, dataRecieveRev);
-			
-			//dataRecieveRev = EEPROM_getRevalidationData(128);
-			
-			//WIFI_HTTPPost2(dataRecieveRev);
-			//WIFI_HTTPPost(idRevaladitie, startDatum, startTijd, fietsTijd, intensiteit);
+			Delay(SystemCoreClock/8);
+
     }
     else
     {
