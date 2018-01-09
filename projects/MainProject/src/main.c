@@ -27,17 +27,16 @@ extern volatile int head, tail;
 
 int main(){	
 
-	char buf[100];
 	revalidationData dataSendRev;
 	revalidationData dataRecieveRev;
 	head = 0;
 	tail = 0;
 	
-	dataSendRev.duration.value = 600;
-	dataSendRev.intensity.value = -20;
-	dataSendRev.startDateDD.value = 3;
-	dataSendRev.startDateMM.value = 12;
-	dataSendRev.startDateYYYY.value = 1996;
+//	dataSendRev.duration.value = 600;
+//	dataSendRev.intensity.value = -20;
+//	dataSendRev.startDateDD.value = 3;
+//	dataSendRev.startDateMM.value = 12;
+//	dataSendRev.startDateYYYY.value = 1996;
 	
 
 	

@@ -32,12 +32,6 @@ void initTimeoutTIM(void);
 
 /* Public variables --------------------------------------------------------*/
 
-	union {	uint16_t value; uint8_t bytes[2]; }duration;
-	union { uint32_t value; uint8_t bytes[4]; }intensity;
-	union { uint8_t value; uint8_t bytes[1]; }startDateDD;
-	union { uint8_t value; uint8_t bytes[1]; }startDateMM;
-	union {	uint16_t value; uint8_t bytes[2]; }startDateYYYY;
-}revalidationData2;
 
 
 typedef struct
@@ -72,6 +66,9 @@ typedef struct
 	uint64_t sumAngle;
 	uint64_t sumSymmetry;
 	int64_t sumPassiveRPM;
+	int64_t sumDriveTorque;
+	int64_t sumDriveTorqueLimit;
+	int64_t sumBrakeTorque;
 }average;
 
 
