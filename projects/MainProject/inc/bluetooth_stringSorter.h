@@ -1,6 +1,6 @@
 /**
 ******************************************************************************
-* @file    	bluetoothcomm.h 
+* @file    	_bluetooth_stringSorter.h 
 * @author 	Gerard van Turennout
 * @version	V0.0.1
 * @date   	19 - 12 - 2017
@@ -8,17 +8,19 @@
 ******************************************************************************
 */
   
-#ifndef _bluetoothcomm_H
-#define _bluetoothcomm_H
+#ifndef _bluetooth_stringSorter_H
+#define _bluetooth_stringSorter_H
 	
 #include "stdint.h"
-	
+#include "string.h"
+
+#include "STM32F0_discovery.h"
 /* Public functions --------------------------------------------------------*/
-	void bluetoothcomm_config(void);
-	void bluetoothComm_init(void);
+	void sortStringData(void);
+	void resetHeadTail(void);
 
 /* Public variables --------------------------------------------------------*/
 
 
 
-#endif /* bluetoothcomm */
+#endif /*  */

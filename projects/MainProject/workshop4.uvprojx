@@ -10,8 +10,7 @@
       <TargetName>main</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>5060528::V5.06 update 5 (build 528)::ARMCC</pCCUsed>
-      <uAC6>0</uAC6>
+      <pCCUsed>5060422::V5.06 update 4 (build 422)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F051R8</Device>
@@ -474,6 +473,21 @@
               <FileName>sendReceiveUART.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\sendReceiveUART.c</FilePath>
+            </File>
+            <File>
+              <FileName>bluetoothComm.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\bluetoothComm.c</FilePath>
+            </File>
+            <File>
+              <FileName>bluetooth_stringSorter.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\inc\bluetooth_stringSorter.h</FilePath>
+            </File>
+            <File>
+              <FileName>bluetooth_stringSorter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\bluetooth_stringSorter.c</FilePath>
             </File>
           </Files>
         </Group>
