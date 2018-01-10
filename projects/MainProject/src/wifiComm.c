@@ -107,41 +107,62 @@ void WIFI_connectServer(void){
 
 void WIFI_HTTPPost(revalidationData data)
 {
-
+	uint16_t length;
 	char *contentLength;
 	char *bufMessage;
 	char *bufCommand;
 	char *sendString;
-	
+	char buf[10];
 	//create safespace for arrays
-	contentLength = malloc(30 * sizeof(char));
-	sendString = 		malloc(510 * sizeof(char));
-	bufMessage = 		malloc(700 * sizeof(char));
+	contentLength = malloc(20 * sizeof(char));
+	//sendString = 		malloc(400 * sizeof(char));
 	bufCommand = 		malloc(20 * sizeof(char));
+	bufMessage = 		malloc(430 * sizeof(char));
 	
 	
-	sprintf(sendString, "idRT=%d&duration=%d&averageRPM=%d&averageTorque=%d&averagePower=%d&averageAngle=%d&averageSymmetry=%d&calories=%d&averagePassiveRPM=%d&minPassiveRPM=%d&maxPassiveRPM=%d&averageDriveTorque=%d&averageDriveTorqueLimit=%d&minDriveTorque=%d&maxDriveTorque=%d&averageBrakeTorque=%d&minBrakeTorque=%d&maxBrakeTorque=%d&trainType=%s&strainer=%s&deviceMode=%s\r\n",
-					3,data.duration.value, data.averageRPM.value, data.averageTorque.value, data.averagePower.value,
-					data.averageAngle.value, data.averageSymmetry.value, data.calories.value, data.averagePassiveRPM.value,
-					data.minPassiveRPM.value, data.maxPassiveRPM.value, data.averageDriveTorque.value, data.averageDriveTorqueLimit.value,
-					data.minDriveTorque.value, data.maxDriveTorque.value, data.averageBrakeTorque.value, data.minBrakeTorque.value,
-					data.maxBrakeTorque.value, data.trainType, data.trainer, data.deviceMode);
 	
-	USART_putstr(USART1, sendString);
-	sprintf(contentLength, "Content-length:%d\r\n", strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
+
+
 	
+	//USART_putstr(USART1, sendString);
+	sprintf(contentLength, "Content-length:284\r\n");	//niet meer variabel...
+//	strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
+	//USART_putstr(USART1, contentLength);
 	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
+	
 	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
 	strcat(bufMessage,"Content-Type:application/x-www-form-urlencoded\r\n");
 	strcat(bufMessage,"Cache-Control:no-cache\r\n");
 	strcat(bufMessage, contentLength);
+	free(contentLength);
 	strcat(bufMessage,"\r\n");
-	strcat(bufMessage, sendString);
-	
-	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
+	//USART_putstr(USART1, bufMessage);
+	length = strlen(bufMessage);
+//	sprintf(buf,"%d", length);
+	//USART_putstr(USART1,buf);
+	//strcat(bufMessage, sendString);
+//	length = 0;
+	length += sprintf(bufMessage+length, "idRT=%d&dur=%d&avRPM=%d&avTorque=%d&avPower=%d&",
+												3, data.duration.value, data.averageRPM.value, data.averageTorque.value, data.averagePower.value);
+	length += sprintf(bufMessage+length, "avAngle=%d&avSymmetry=%d&cal=%d&avPasRPM=%d&minPasRPM=%d&",
+										data.averageAngle.value, data.averageSymmetry.value, data.calories.value, data.averagePassiveRPM.value,
+										data.minPassiveRPM.value);
+	length += sprintf(bufMessage+length, "maxPasRPM=%d&avDrvTorque=%d&avDrvTorqueLim=%d&minDrvTorque=%d&",
+										data.maxPassiveRPM.value, data.averageDriveTorque.value, data.averageDriveTorqueLimit.value,
+										data.minDriveTorque.value);
+	length += sprintf(bufMessage+length, "maxDrvTorque=%d&avBrkTorque=%d&minBrkTorque=%d&",
+										data.maxDriveTorque.value, data.averageBrakeTorque.value, data.minBrakeTorque.value);
+	length += sprintf(bufMessage+length, "maxBrkTorque=%d&trainType=%s&trainer=%s&deviceMode=%s\r\n",
+										data.maxBrakeTorque.value, data.trainType, data.trainer, data.deviceMode);
+	//USART_putstr(USART1, bufMessage);
+	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", length);
 	USART_putstr(USART2, bufCommand);
 	delay(SystemCoreClock/(8));
 	USART_putstr(USART2, bufMessage);
+	
+	//free willy
+	free(bufMessage);
+	free(bufCommand);
 }
 
 

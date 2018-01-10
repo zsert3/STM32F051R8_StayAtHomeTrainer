@@ -28,17 +28,31 @@ extern volatile int head, tail;
 int main(){	
 
 	revalidationData dataSendRev;
-	revalidationData dataRecieveRev;
+	//revalidationData dataRecieveRev;
 	head = 0;
 	tail = 0;
 	
-//	dataSendRev.duration.value = 600;
-//	dataSendRev.intensity.value = -20;
-//	dataSendRev.startDateDD.value = 3;
-//	dataSendRev.startDateMM.value = 12;
-//	dataSendRev.startDateYYYY.value = 1996;
+	dataSendRev.duration.value = 600;
+	dataSendRev.averageAngle.value = 20;
+	dataSendRev.averageBrakeTorque.value = 30;
+	dataSendRev.averageDriveTorque.value = 40;
+	dataSendRev.averageDriveTorqueLimit.value = 50;
+	dataSendRev.averagePassiveRPM.value = 60;
+	dataSendRev.averagePower.value = 70;
+	dataSendRev.averageRPM.value = 80;
+	dataSendRev.averageSymmetry.value = 90;
+	dataSendRev.averageTorque.value = 100;
+	dataSendRev.calories.value = 110;
+	strcpy(dataSendRev.deviceMode, "120");
+	dataSendRev.maxBrakeTorque.value = 130;
+	dataSendRev.maxDriveTorque.value = 140;
+	dataSendRev.maxPassiveRPM.value = 150;
+	dataSendRev.minBrakeTorque.value = 160;
+	dataSendRev.minDriveTorque.value = 170;
+	dataSendRev.minPassiveRPM.value = 180;
+	strcpy(dataSendRev.trainer, "THERA");
+	strcpy(dataSendRev.trainType, "SPRINTER");
 	
-
 	
 	USART_init();
 	STM_EVAL_LEDInit(LED3);
@@ -58,7 +72,7 @@ int main(){
 			
 //			USART_putstr(USART2, "begin\r\n");
 //			USART_putc(USART2, USART_getstr("HOI"));
-			sendATCommand();
+//			sendATCommand();
 			
 //			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
 //			EEPROM_setRevalidationData(128, dataSendRev);
@@ -66,9 +80,9 @@ int main(){
 //			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
 //			dataRecieveRev = EEPROM_getRevalidationData(128);
 
-//			USART_putstr(USART1, "Data verzenden naar server\r\n");
-//	
-//			WIFI_HTTPPost2(dataRecieveRev);
+			USART_putstr(USART1, "Data verzenden naar server\r\n");
+	
+			WIFI_HTTPPost(dataSendRev);
 			
 			Delay(SystemCoreClock/8);
 
