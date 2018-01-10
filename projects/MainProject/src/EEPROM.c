@@ -270,6 +270,9 @@ void EEPROM_setInitPage(initPage page)
 	memcpy(total + totalSize, page.tailAdress.bytes, totalSize + sizeof(page.tailAdress));
 	totalSize += sizeof(page.tailAdress);
 	
+	memcpy(total + totalSize, page.idRevTrainer.bytes, totalSize + sizeof(page.idRevTrainer));
+	totalSize += sizeof(page.idRevTrainer);
+	
 	memcpy(total + totalSize, page.IPAdress, totalSize + 20);
 	totalSize += 20;
 	
@@ -303,6 +306,9 @@ initPage EEPROM_getInitPage()
 	//set tail adress
 	memcpy(page.tailAdress.bytes, data + totalSize, sizeof(page.tailAdress));
 	totalSize += sizeof(page.tailAdress);
+	
+	memcpy(page.idRevTrainer.bytes, data + totalSize, sizeof(page.idRevTrainer));
+	totalSize += sizeof(page.idRevTrainer);
 	
 	memcpy(page.IPAdress, data + totalSize, 20);
 	totalSize += 20;

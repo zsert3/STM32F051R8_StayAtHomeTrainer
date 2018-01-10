@@ -100,6 +100,7 @@ typedef struct
 typedef struct
 {
 	union {	uint16_t value; uint8_t bytes[2]; }tailAdress;
+	union {	uint32_t value; uint8_t bytes[4]; }idRevTrainer;
 	char IPAdress[20];
 	char SSID[15];
 	char pass[11]; 
