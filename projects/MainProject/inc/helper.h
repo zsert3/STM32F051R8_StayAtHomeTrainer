@@ -26,7 +26,8 @@ extern "C" {
 /* Public functions --------------------------------------------------------*/
 void Delay(const int d);
 void Delay2(const int d);
-
+void multiplexInit();
+void selectMultiplex(uint8_t select);
 void initTimeoutTIM(void);
 
 

@@ -41,6 +41,42 @@ void Delay2(const int d)
 //	
 //}
 
+void multiplexInit()
+{
+	// GPIOC Periph clock enable
+  RCC->AHBENR |= RCC_AHBENR_GPIOCEN; //optional
+	
+	// PC0,PC1 ports in output mode
+  GPIOC->MODER |= (GPIO_MODER_MODER0_0 | GPIO_MODER_MODER1_0);
+	
+	// Push pull mode selected
+  GPIOC->OTYPER &= ~(GPIO_OTYPER_OT_0 | GPIO_OTYPER_OT_1);
+	
+	// Maximum speed setting
+  GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR0 | GPIO_OSPEEDER_OSPEEDR1);
+	
+	// Pull-up and pull-down resistors disabled
+  GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR0 | GPIO_PUPDR_PUPDR1);
+}
+
+void selectMultiplex(uint8_t select)
+{
+		if(select)
+		{
+			// Reset PC9
+			GPIOC->BSRR = GPIO_BSRR_BR_0;
+			// Set PC1
+			GPIOC->BSRR = GPIO_BSRR_BS_1 ;
+    }
+		else
+		{
+			// Set PC0
+			GPIOC->BSRR = GPIO_BSRR_BS_0;
+			// Reset PC1
+			GPIOC->BSRR = GPIO_BSRR_BR_1;   
+		}
+}
+
 void initTimeoutTIM(){
 	TIM_TimeBaseInitTypeDef TIM_initStruct;
 	NVIC_InitTypeDef        NVIC_InitStructure;
