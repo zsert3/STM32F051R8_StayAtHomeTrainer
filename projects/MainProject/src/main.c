@@ -149,10 +149,31 @@ int main()
 int main(){	
 	
 	revalidationData dataSendRev;
-	revalidationData dataRecieveRev;
+	//revalidationData dataRecieveRev;
 	head = 0;
 	tail = 0;
 	
+	dataSendRev.duration.value = 600;
+	dataSendRev.averageAngle.value = 2;
+	dataSendRev.averageBrakeTorque.value = 3;
+	dataSendRev.averageDriveTorque.value = 4;
+	dataSendRev.averageDriveTorqueLimit.value = 5;
+	dataSendRev.averagePassiveRPM.value = 6;
+	dataSendRev.averagePower.value = 7;
+	dataSendRev.averageRPM.value = 8;
+	dataSendRev.averageSymmetry.value = 9;
+	dataSendRev.averageTorque.value = 10;
+	dataSendRev.calories.value = 11;
+	strcpy(dataSendRev.deviceMode, "tekst");
+	dataSendRev.maxBrakeTorque.value = 13;
+	dataSendRev.maxDriveTorque.value = 14;
+	dataSendRev.maxPassiveRPM.value = 15;
+	dataSendRev.minBrakeTorque.value = 16;
+	dataSendRev.minDriveTorque.value = 17;
+	dataSendRev.minPassiveRPM.value = 18;
+	strcpy(dataSendRev.trainer, "THERA");
+	strcpy(dataSendRev.trainType, "SPRINTER");
+
 	USART_init();
 	STM_EVAL_LEDInit(LED3);
 	
@@ -171,7 +192,16 @@ int main(){
 
 			STM_EVAL_LEDOff(LED3);
 			
-			sendATCommand();
+			
+//			USART_putstr(USART1, "Data opslaan in EEPROM...\r\n");
+//			EEPROM_setRevalidationData(128, dataSendRev);
+//			
+//			USART_putstr(USART1, "Data ophalen uit EEPROM...\r\n");
+//			dataRecieveRev = EEPROM_getRevalidationData(128);
+
+			USART_putstr(USART1, "Data verzenden naar server\r\n");
+	
+			WIFI_HTTPPost(dataSendRev);
 			
 			Delay(SystemCoreClock/8);
 
