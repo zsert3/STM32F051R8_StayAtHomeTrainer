@@ -40,9 +40,11 @@ int main()
 	uint8_t wifiConnectionStatus = 0;
 	int64_t sumCount = 0;
 	
+	multiplexInit();
+	selectMultiplex(1); 
 	
 	//led and button initialization
-	STM_EVAL_LEDInit(LED3);
+	STM_EVAL_LEDInit(LED3); 
 	STM_EVAL_PBInit(BUTTON_USER, BUTTON_MODE_GPIO);
 	
 	//EEPROM initialisation
@@ -51,7 +53,7 @@ int main()
 	if(EEPROM_CommStatus != EEPROM_COMM_OK )
 	{
 		//error state example blink led fast
-		while(1)
+		 while(1)
       {
         STM_EVAL_LEDToggle(LED3);
         Delay(SystemCoreClock/8/20);
@@ -75,7 +77,7 @@ int main()
 		saveEEPROM = 1;
 	}
 		
-	//select koning harald blauwtand van Denemarken
+	//select koning Harald Blauwtand van Denemarken
 	while(1)
 	{
 		
@@ -85,7 +87,7 @@ int main()
 		sumCount++;
 		
 		averageData.sumRPM += currentData.currentRPM;
-		averageData.sumTorque += currentData.currentTorque;
+ 		averageData.sumTorque += currentData.currentTorque;
 		averageData.sumPower += currentData.currentPower;
 		averageData.sumAngle += currentData.currentAngle;
 		averageData.sumSymmetry += currentData.currentSymmetry;
@@ -136,7 +138,7 @@ int main()
 			}
 			else
 			{
-				EEPROM_setRevalalidationData(finalData);
+				EEPROM_setRevalidationData(initData.tailAdress.value  , finalData);
 				initData.tailAdress.value++;
 			}
 		}
