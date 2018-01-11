@@ -17,7 +17,7 @@ extern volatile int head, tail, ok, fail, sFail,lastBuffer, bufferVal, returnCod
 
 /* Private function prototypes -----------------------------------------------*/
 void delay(const int d);
-
+uint8_t WIFI_connectAttempt(void);
 /**
   * @brief  This function will reset the Wifi module
   * @param  None
@@ -44,23 +44,31 @@ void sendATCommand(void){
 						For now a hard-coded SSID and password.
 						It will keep on running untill it has astablished a connection
   * @param  None
-	* @retval None
+	* @retval 1 = succes
+						0 = fail
   */
-void WIFI_connect(void){
+uint8_t WIFI_connect(void){
+	uint8_t attempts = 5;
+	uint8_t i;
+	
+	for(i=0;i<5;i++){
+		if(WIFI_connectAttempt()){
+			return 1;
+		}
+	}
+	
+	return 0;
+}
+
+uint8_t WIFI_connectAttempt(void){
 	USART_putstr(USART1, "Connecting to WIFI...\r\n");
 	USART_putstr(USART2, "AT+CWJAP=\"ESP8266\",\"123456789\"\r\n");
 	
-	if(USART_getstr("OK") == 1){
-	}else{
+	if(!USART_getstr("OK")){
 		USART_putstr(USART1, "Connect with wifi Failed!!\r\n");
-		WIFI_connect();
+		return 0;
 	}
-	
-//	while(ok == 0){
-//		if(fail == 1){
-//			
-//		}
-//	}
+	return 1;
 }
 
 /**
@@ -107,55 +115,67 @@ void WIFI_connectServer(void){
 
 void WIFI_HTTPPost(revalidationData data)
 {
-	uint16_t length;
-	char *contentLength;
+	uint16_t length, oldLength, totalLength;
+	//char *contentLength;
 	char *bufMessage;
 	char *bufCommand;
-	char *sendString;
+	//char *sendString;
+	//char *startString;
+	char HTTPBody[270];
 	char buf[10];
 	//create safespace for arrays
-	contentLength = malloc(20 * sizeof(char));
+	//contentLength = malloc(20 * sizeof(char));
 	//sendString = 		malloc(400 * sizeof(char));
-	bufCommand = 		malloc(20 * sizeof(char));
-	bufMessage = 		malloc(430 * sizeof(char));
-	
-	
-	
 
-
+	bufMessage = 		malloc(330 * sizeof(char));
 	
-	//USART_putstr(USART1, sendString);
-	sprintf(contentLength, "Content-length:284\r\n");	//niet meer variabel...
-//	strlen(sendString)-2);	//-2 because \r\n doesn't have to be counted
-	//USART_putstr(USART1, contentLength);
 	strcpy(bufMessage,"POST /add_data.php HTTP/1.1\r\n");
-	
 	strcat(bufMessage,"Host: stayathometrainer.nl\r\n");
 	strcat(bufMessage,"Content-Type:application/x-www-form-urlencoded\r\n");
 	strcat(bufMessage,"Cache-Control:no-cache\r\n");
-	strcat(bufMessage, contentLength);
-	free(contentLength);
-	strcat(bufMessage,"\r\n");
+	
+	//HTTPBody = 			malloc(200 * sizeof(char));
+
+	//sprintf(contentLength, "Content-length:%d\r\n", 225);	//-2 because \r\n doesn't have to be counted
+	
+	//USART_putstr(USART1, sendString);
+	
+	//USART_putstr(USART1, contentLength);
+	
+	//USART_putstr(USART1, startString);
+	//strcat(bufMessage, contentLength);
+	//free(contentLength);
+	//strcat(bufMessage,"\r\n");
 	//USART_putstr(USART1, bufMessage);
-	length = strlen(bufMessage);
-//	sprintf(buf,"%d", length);
-	//USART_putstr(USART1,buf);
-	//strcat(bufMessage, sendString);
-//	length = 0;
-	length += sprintf(bufMessage+length, "idRT=%d&dur=%d&avRPM=%d&avTorque=%d&avPower=%d&",
-												3, data.duration.value, data.averageRPM.value, data.averageTorque.value, data.averagePower.value);
-	length += sprintf(bufMessage+length, "avAngle=%d&avSymmetry=%d&cal=%d&avPasRPM=%d&minPasRPM=%d&",
+	oldLength = strlen(bufMessage);
+	length = 0;
+	
+	length += sprintf(HTTPBody+length, "v1=%d&v2=%d&v3=%d&v4=%d&v5=%d&",
+												4, data.duration.value, data.averageRPM.value, data.averageTorque.value, data.averagePower.value);
+	length += sprintf(HTTPBody+length, "v6=%d&v7=%d&v8=%d&v9=%d&v10=%d&",
 										data.averageAngle.value, data.averageSymmetry.value, data.calories.value, data.averagePassiveRPM.value,
 										data.minPassiveRPM.value);
-	length += sprintf(bufMessage+length, "maxPasRPM=%d&avDrvTorque=%d&avDrvTorqueLim=%d&minDrvTorque=%d&",
+	length += sprintf(HTTPBody+length, "v11=%d&v12=%d&v13=%d&v14=%d&",
 										data.maxPassiveRPM.value, data.averageDriveTorque.value, data.averageDriveTorqueLimit.value,
 										data.minDriveTorque.value);
-	length += sprintf(bufMessage+length, "maxDrvTorque=%d&avBrkTorque=%d&minBrkTorque=%d&",
+	length += sprintf(HTTPBody+length, "v15=%d&v16=%d&v17=%d&",
 										data.maxDriveTorque.value, data.averageBrakeTorque.value, data.minBrakeTorque.value);
-	length += sprintf(bufMessage+length, "maxBrkTorque=%d&trainType=%s&trainer=%s&deviceMode=%s\r\n",
+	length += sprintf(HTTPBody+length, "v18=%d&v19=%s&v20=%s&v21=%s\r\n",
 										data.maxBrakeTorque.value, data.trainType, data.trainer, data.deviceMode);
+	USART_putstr(USART1, HTTPBody);
+	
+	
+
+	
+	
+	sprintf(bufMessage+strlen(bufMessage), "Content-length:%d\r\n\r\n%s",length-2, HTTPBody);	//-2 because \r\n doesn't have to be counted
+	free(HTTPBody);
+	//free(startString);
+	//strncat(bufMessage, contentLength, 129);
+	
 	//USART_putstr(USART1, bufMessage);
-	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", length);
+	bufCommand = 		malloc(30 * sizeof(char));
+	sprintf(bufCommand, "AT+CIPSENDBUF=%d\r\n", strlen(bufMessage));
 	USART_putstr(USART2, bufCommand);
 	delay(SystemCoreClock/(8));
 	USART_putstr(USART2, bufMessage);
@@ -163,6 +183,7 @@ void WIFI_HTTPPost(revalidationData data)
 	//free willy
 	free(bufMessage);
 	free(bufCommand);
+	free(HTTPBody);
 }
 
 
@@ -202,20 +223,26 @@ uint8_t WIFI_checkConnection(void){
   * @param  None
 	* @retval None
   */
-void WIFI_init(void){
+uint8_t WIFI_init(void){
 	uint8_t retVal=0;
+	uint8_t status;
 	USART_putstr(USART1, "----------Start Init--------\r\n");
 	retVal = WIFI_checkConnection();
 	
 	if(retVal == 3){		//No connection
-		WIFI_connect();
-		WIFI_connectServer();
+		if(WIFI_connect() == 1){
+			WIFI_connectServer();
+		} else{
+			return 0;
+		}
 	}else if(retVal == 2){	//Wifi connected, Server disconnected
 		WIFI_connectServer();
 	}
 	
 	USART_putstr(USART1, "---------Init Done--------\r\n");
 	STM_EVAL_LEDOn(LED3);
+	
+	return 1;
 }
 
 void delay(const int d)

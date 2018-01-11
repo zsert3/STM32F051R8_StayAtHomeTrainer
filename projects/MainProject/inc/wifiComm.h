@@ -25,10 +25,10 @@ extern "C" {
 	#include <stdio.h>
 	
 /* Public functions --------------------------------------------------------*/
-	void WIFI_init(void);
+	uint8_t WIFI_init(void);
 	void WIFI_reset(void);
 	void sendATCommand(void);
-	void WIFI_connect(void);
+	uint8_t WIFI_connect(void);
 	void WIFI_checkIP(void);
 	void WIFI_connectServer(void);
 	void WIFI_HTTPPost(revalidationData data);
