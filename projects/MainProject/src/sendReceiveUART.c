@@ -19,10 +19,17 @@
 #include <stdlib.h>
 
 /* Global variables ----------------------------------------------------------*/
+
 volatile int ok, fail, sFail, lastBuffer;
+
+volatile char* buffer;
+volatile int returnCode, isSet, timeOutIT;
+volatile char lastBuffer, bufferVal;
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+#define TIMEOUT 200000
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -62,9 +69,15 @@ void USART_init(void)
   USART_Cmd(USART1,ENABLE);
 	
 	/* Enable RXNE interrupt */
+
 	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 	/* Enable USART1 global interrupt */
 	NVIC_EnableIRQ(USART1_IRQn);
+
+	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
+	/* Enable USART1 global interrupt */
+	NVIC_EnableIRQ(USART2_IRQn);
+
 	
 }
 
@@ -86,64 +99,65 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
 {
   while(*str)
   {
-    
     USART_putc(USARTx, *str++);
   }
 }
 
-void USART_getc(USART_TypeDef* USARTx)
+/**
+  * @brief  This function waits untill str1 is received through USART2
+						for instance 'OK' when a message is send correctly
+	* @param 	str: this is the string the function will search for
+	* @retval 0: Error state
+						1: String found]
+  */
+uint8_t USART_getstr(char* str)
 {
-//	
-//	
-//	if(buffer[head] != 0)
-//	{
-//	//print character
-//	USART_putc(USARTx, buffer[head]);
-//	
-//	//clear character from head position
-//	buffer[head] = 0;
-//	
-//	//increase head position
-//	if(head == 99) 
-//		head = 0;
-//	else 
-//		head++;
-//	}	
-//	
-//	//busy waiting getc
-////  char c;
-
-////  // Was there an Overrun error?
-////  if((USARTx->ISR & USART_ISR_ORE) != 0)
-////  {
-////    // Yes, clear it 
-////    USARTx->ICR |= USART_ICR_ORECF;
-////  }
-
-////  // Wait for data in the Receive Data Register
-////  while((USARTx->ISR & USART_ISR_RXNE) == 0) ;
-
-////  // Read data from RDR, clears the RXNE flag
-////  c = (char)USARTx->RDR;
-
-////  return(c);
-}
-
-void USART_getstr(USART_TypeDef* USARTx, char *str)
-{
-
-	char c;
+	uint8_t i;
+	uint8_t strLen = 0;
+	uint8_t timeOut = 8;
 	
-	while(c != '\r')
-	{
-		USART_getc(USARTx);
-		//if(c == '\r')break;
-  		USART_putc(USARTx, c);
-	  *str = c;
-		str++;
+	timeOutIT = 0;
+	strLen = strlen(str);
+	
+	//Start timeout Timer
+	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+	TIM_Cmd(TIM2, ENABLE);
+	
+	while(timeOut > 0){
+		
+		while(bufferVal != *str){	//waiting for first bit of str !!TIMER INTERRUPT!!
+			if(timeOutIT == 1){
+				USART_putstr(USART1, "TIMEOUT\r\n");
+				timeOut = 0;
+				//TIM_Cmd(TIM2, DISABLE);	//stop timer
+				return 0;
+			}
+		}
+		
+		//search for next chars
+		for(i = 1; i<strLen; i++){
+			str++;
+			isSet = 0; 
+			while(!isSet);	//set from interrupt when a new char comes in
+			
+			if(bufferVal != *str){
+				//USART_putstr(USART1, "ALLES IS KAPOT!!\r\n");
+				str -= i;
+				timeOut--;
+				break;
+			}else{
+				//USART_putstr(USART1, "Nog een gevonden!!\r\n");
+				if(i == strLen-1){
+					//USART_putstr(USART1, "HOOOI");
+					TIM_Cmd(TIM2, DISABLE);	//stop timer
+					return 1;
+				}
+			}
+		}
 	}
-	
-	*str = '\0';
+	if(timeOut == 0){
+		return 0;
+	}
 }
 
 

@@ -133,7 +133,7 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4104</DriverSelection>
+            <DriverSelection>4096</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
@@ -324,8 +324,8 @@
             <uSurpInc>0</uSurpInc>
             <uC99>0</uC99>
             <useXO>0</useXO>
-            <v6Lang>1</v6Lang>
-            <v6LangP>1</v6LangP>
+            <v6Lang>3</v6Lang>
+            <v6LangP>3</v6LangP>
             <vShortEn>1</vShortEn>
             <vShortWch>1</vShortWch>
             <v6Lto>0</v6Lto>
@@ -475,6 +475,7 @@
               <FilePath>.\src\sendReceiveUART.c</FilePath>
             </File>
             <File>
+
               <FileName>bluetoothComm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\bluetoothComm.c</FilePath>
@@ -488,6 +489,10 @@
               <FileName>bluetooth_stringSorter.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\bluetooth_stringSorter.c</FilePath>
+
+              <FileName>helper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\helper.c</FilePath>
             </File>
           </Files>
         </Group>
