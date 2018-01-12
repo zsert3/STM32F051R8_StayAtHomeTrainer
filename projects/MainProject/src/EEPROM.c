@@ -235,7 +235,7 @@ void SE_WaitForI2CFlag(uint32_t flag)
   * @param  None
   * @retval None
   */
-void SE24LC512_Clear(void)
+void EEPROM_Clear(void)
 {
 		//uint8_t data[126] = {0xFF};
 		uint8_t *data = malloc(PAGE_LENGTH * sizeof(uint8_t)); 

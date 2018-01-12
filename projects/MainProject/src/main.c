@@ -21,6 +21,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//temp debug should be seperate program
+#define DEBUG1
+
 extern uint32_t EEPROM_CommStatus;
 extern volatile int head, tail;
 
@@ -50,6 +53,18 @@ int main()
 	//EEPROM initialisation
 	I2C_Setup();
 	
+	//temp debug, should be seperate program
+	#ifdef DEBUG
+	EEPROM_clearData();
+	initData.tail.value = 1;
+	initData.idRevTrainer.value = 5;
+	initData.ipAdress = "160.153.129.214";
+	initData.SSID = "ESP8266";
+	initData.pass = "123456789";
+	initData.lampMac = "haHAA"
+	EEPROM_setInitPage(initData);
+	#endif
+	
 	if(EEPROM_CommStatus != EEPROM_COMM_OK )
 	{
 		//error state example blink led fast
@@ -63,9 +78,8 @@ int main()
 	initData = EEPROM_getInitPage();
 	
 	//select wifi
-	//wifiConnectionStatus = WIFI_init();
 	
-	if(wifiConnectionStatus)
+	if(WIFI_init())
 	{
 		if(initData.tailAdress.value > 1)
 			sendEepromToWeb(initData.tailAdress.value);

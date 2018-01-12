@@ -36,7 +36,7 @@ extern "C" {
 	
 /* Public functions --------------------------------------------------------*/
 void    					I2C_Setup( void );
-void    					SE24LC512_Clear(void);
+void    					EEPROM_Clear(void);
 initPage 					EEPROM_getInitPage(void); 
 void 							EEPROM_setInitPage(initPage page);
 void 							EEPROM_setRevalidationData(uint16_t addr, revalidationData data);
