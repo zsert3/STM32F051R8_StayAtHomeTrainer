@@ -1,6 +1,6 @@
 /**
 ******************************************************************************
-* @file    	sendReceiveUART.h 
+* @file    	wifiComm.h 
 * @author 	
 * @version	V0.0.1
 * @date   	?? - ?? - ????
@@ -8,24 +8,26 @@
 ******************************************************************************
 */
   
-#ifndef _sendReceiveUART_H
-#define _sendReceiveUART_H
+#ifndef _wifiComm_H
+#define _wifiComm_H
   
 #ifdef __cplusplus
 extern "C" {
 #endif
 	
 	#include "stdint.h"
-	#include "stm32f0xx_usart.h"
+	#include "sendReceiveUART.h"
 	
 /* Public functions --------------------------------------------------------*/
-	void USART_init(void);
-	void USART_putEnter(void);
-	void USART_putc(USART_TypeDef* USARTx, char c);
-	void USART_getc(USART_TypeDef* USARTx);
-	void USART_putstr(USART_TypeDef* USARTx, char *str);
-	void USART_getstr(USART_TypeDef* USARTx, char *str);
-	void USART_clearscreen(USART_TypeDef* USARTx);
+	void WIFI_init(void);
+	void WIFI_reset(void);
+	void sendATCommand(void);
+	void WIFI_connect(void);
+	void WIFI_checkIP(void);
+	void WIFI_connectServer(void);
+	void WIFI_sendCommand(char* str);
+	void WIFI_checkConnection(void);
+//	void delay();
 
 /* Public variables --------------------------------------------------------*/
 

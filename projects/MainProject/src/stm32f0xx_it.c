@@ -29,17 +29,27 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f0xx_it.h"
+#include "sendReceiveUART.h"
 #include "STM32F0_discovery.h"
 
 // ----------------------------------------------------------------------------
 // Global variables
 // ----------------------------------------------------------------------------
 
+
+uint8_t bufferlength = 100;
+//extern volatile int bufferVal, head , tail;
+
+extern volatile char *buffer;
+extern volatile uint8_t head, tail;
+
+
+char bufferVal;
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-	uint16_t position = 0;
+uint16_t position = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -101,6 +111,35 @@ void SysTick_Handler(void)
   if(ticks   ==  30){GPIOC->BSRR = 0x0200;} // Green LED on
   if(ticks   ==  45){GPIOC->BRR  = 0x0200;} // Green LED off
   if(ticks   == 300){ticks=0;}
+}
+
+void USART1_IRQHandler(void)
+{ 
+	
+	//Read Data Register not empty interrupt?
+	if(USART1->ISR & USART_ISR_RXNE)
+	{
+		 // Read the data, clears the interrupt flag
+		bufferVal = USART1->RDR;
+		//USART2->TDR = bufferVal;
+		
+		//USART_putc(USART1, bufferVal);
+		
+		
+		//check if the position is free and prevent overwriting head position (head position always has a value != 0)
+		if(((head+1) != tail) && !(tail == 0 && head == 99)){
+				// Read the data, clears the interrupt flag
+				buffer[head] = bufferVal;
+
+				//makes the reader move in a circle
+				if(head == 99){
+					head = 0;
+				}
+				else{
+					head++;
+				}
+			}
+	}
 }
 
 /******************************************************************************/
