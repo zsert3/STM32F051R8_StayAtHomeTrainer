@@ -45,8 +45,12 @@ int main(){
 	STM_EVAL_PBInit(BUTTON_USER, BUTTON_MODE_GPIO);
 	
 	bluetoothComm_init();
+<<<<<<< HEAD
 	presetStringSort();
 	USART_putc(USART2, 'N');
+=======
+	resetHeadTail();
+>>>>>>> faeaf6b2bf40741c03c12b24cb689d3b646219ec
 	while(1){
 		//for(i=SystemCoreClock/8/ (10000); i>0; i--){;}
 		if(tail != head)
@@ -55,7 +59,20 @@ int main(){
 		}
 
 		
+<<<<<<< HEAD
 
+=======
+		if (STM_EVAL_PBGetState(BUTTON_USER))
+    {
+
+			STM_EVAL_LEDOn(LED3);
+			
+    }
+    else
+    {
+      STM_EVAL_LEDOff(LED3);
+    }
+>>>>>>> faeaf6b2bf40741c03c12b24cb689d3b646219ec
 		
 		
 	}

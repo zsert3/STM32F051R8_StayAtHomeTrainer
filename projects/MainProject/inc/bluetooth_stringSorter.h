@@ -17,7 +17,11 @@
 #include "STM32F0_discovery.h"
 /* Public functions --------------------------------------------------------*/
 	void sortStringData(void);
+<<<<<<< HEAD
 	void presetStringSort(void);
+=======
+	void resetHeadTail(void);
+>>>>>>> faeaf6b2bf40741c03c12b24cb689d3b646219ec
 
 /* Public variables --------------------------------------------------------*/
 
