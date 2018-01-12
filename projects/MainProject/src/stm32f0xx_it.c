@@ -160,7 +160,7 @@ void USART2_IRQHandler(void)
 
 void TIM2_IRQHandler(void)
 {
-	USART_putc(USART2, TIM_GetITStatus(TIM2, TIM_IT_Update));
+	//USART_putc(USART2, TIM_GetITStatus(TIM2, TIM_IT_Update));
   if(TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET)
   {
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update);

@@ -162,7 +162,7 @@ void WIFI_HTTPPost(revalidationData data)
 										data.maxDriveTorque.value, data.averageBrakeTorque.value, data.minBrakeTorque.value);
 	length += sprintf(HTTPBody+length, "v18=%d&v19=%s&v20=%s&v21=%s\r\n",
 										data.maxBrakeTorque.value, data.trainType, data.trainer, data.deviceMode);
-	USART_putstr(USART1, HTTPBody);
+	//USART_putstr(USART1, HTTPBody);
 	
 	
 
