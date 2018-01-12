@@ -15,25 +15,19 @@
 extern "C" {
 #endif
 	
-	#include <stdint.h>
+	#include "stdint.h"
 	#include "sendReceiveUART.h"
-	#include "sendReceiveUART.h"
-	#include "stm32f0xx.h"
-	#include "stm32f0_discovery.h"
-	#include "helper.h"
-	#include <String.h>
-	#include <stdio.h>
 	
 /* Public functions --------------------------------------------------------*/
-	uint8_t WIFI_init(void);
+	void WIFI_init(void);
 	void WIFI_reset(void);
 	void sendATCommand(void);
-	uint8_t WIFI_connect(void);
+	void WIFI_connect(void);
 	void WIFI_checkIP(void);
 	void WIFI_connectServer(void);
-	void WIFI_HTTPPost(revalidationData data);
-	uint8_t WIFI_checkConnection(void);
-
+	void WIFI_sendCommand(char* str);
+	void WIFI_checkConnection(void);
+//	void delay();
 
 /* Public variables --------------------------------------------------------*/
 

@@ -19,9 +19,13 @@
 #include <stdlib.h>
 
 /* Global variables ----------------------------------------------------------*/
+
+volatile int ok, fail, sFail, lastBuffer;
+
 volatile char* buffer;
-volatile int ok, fail, sFail, returnCode, isSet, timeOutIT;
+volatile int returnCode, isSet, timeOutIT;
 volatile char lastBuffer, bufferVal;
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -65,9 +69,15 @@ void USART_init(void)
   USART_Cmd(USART1,ENABLE);
 	
 	/* Enable RXNE interrupt */
+
+	USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+	/* Enable USART1 global interrupt */
+	NVIC_EnableIRQ(USART1_IRQn);
+
 	USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
 	/* Enable USART1 global interrupt */
 	NVIC_EnableIRQ(USART2_IRQn);
+
 	
 }
 
@@ -92,7 +102,6 @@ void USART_putstr(USART_TypeDef* USARTx, char *str)
     USART_putc(USARTx, *str++);
   }
 }
-
 
 /**
   * @brief  This function waits untill str1 is received through USART2
@@ -149,7 +158,6 @@ uint8_t USART_getstr(char* str)
 	if(timeOut == 0){
 		return 0;
 	}
-	
 }
 
 

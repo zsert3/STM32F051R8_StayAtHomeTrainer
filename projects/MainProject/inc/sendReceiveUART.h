@@ -17,6 +17,7 @@ extern "C" {
 	
 	#include "stdint.h"
 	#include "stm32f0xx_usart.h"
+
 	#include "stm32f0xx_tim.h"
 	#include <String.h>
 	
@@ -26,7 +27,9 @@ extern "C" {
 	void USART_putc(USART_TypeDef* USARTx, char c);
 	void USART_getc(USART_TypeDef* USARTx);
 	void USART_putstr(USART_TypeDef* USARTx, char *str);
+
 	uint8_t USART_getstr(char* str);
+
 	void USART_clearscreen(USART_TypeDef* USARTx);
 
 /* Public variables --------------------------------------------------------*/
