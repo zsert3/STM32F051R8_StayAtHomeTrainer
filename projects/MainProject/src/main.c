@@ -27,7 +27,6 @@
 
 extern volatile char *buffer;
 extern volatile uint8_t head, tail;
-extern volatile int head, tail; //y u int
 
 //temp debug should be seperate program
 #define DEBUG1

@@ -47,11 +47,7 @@ uint8_t bufferlength = 100;
 extern volatile char *buffer;
 extern volatile uint8_t head, tail;
 
-
-char bufferVal;
-
 extern volatile char* buffer;
-int head, tail = 0;
 extern volatile int ok, fail, sFail, returnCode, isSet, timeOutIT;
 extern volatile char lastBuffer, bufferVal;
 

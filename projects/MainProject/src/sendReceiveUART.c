@@ -22,7 +22,7 @@
 
 volatile int ok, fail, sFail;
 
-volatile char* buffer;
+//volatile char* buffer;
 volatile int returnCode, isSet, timeOutIT;
 volatile char lastBuffer, bufferVal;
 
