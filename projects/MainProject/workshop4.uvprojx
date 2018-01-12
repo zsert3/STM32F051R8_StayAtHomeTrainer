@@ -475,21 +475,16 @@
               <FilePath>.\src\sendReceiveUART.c</FilePath>
             </File>
             <File>
-
               <FileName>bluetoothComm.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\bluetoothComm.c</FilePath>
             </File>
             <File>
-              <FileName>bluetooth_stringSorter.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\bluetooth_stringSorter.h</FilePath>
-            </File>
-            <File>
               <FileName>bluetooth_stringSorter.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\bluetooth_stringSorter.c</FilePath>
-
+            </File>
+            <File>
               <FileName>helper.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\helper.c</FilePath>

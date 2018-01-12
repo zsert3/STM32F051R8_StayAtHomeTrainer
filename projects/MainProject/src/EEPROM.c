@@ -29,7 +29,7 @@ void SE_WaitForI2CFlag(uint32_t flag);
   * @brief  This function sets up the I2C1 hardware as mentioned in the
   *         hardware  description in the header file. Afterwards I2C1 is
   *         enabled.
-  * @param  None
+  * @param  None 
   * @retval None
   */
 void I2C_Setup(void)

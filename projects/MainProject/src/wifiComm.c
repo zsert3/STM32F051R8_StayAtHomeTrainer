@@ -340,12 +340,5 @@ uint8_t WIFI_init(void){
 	return 1;
 }
 
-void delay(const int d)
-{
-  volatile int i;
 
-  for(i=d; i>0; i--){ ; }
-
-  return;
-}
 
